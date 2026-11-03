@@ -1,0 +1,1259 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#150d24">
+<meta name="description" content="Alertes janaza vérifiées en Île-de-France, khatma collective, Coran, horaires de prière et rappels.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="QIRAT">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>html,body{height:100%}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>QIRAT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Marcellus&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+/* Layout : écran de téléphone centré sur ordinateur, plein écran sur mobile ; onglets en bas, une vue à la fois */
+:root{
+  --night:#150d24; --plum:#22143a; --violet:#3a2163; --lilac:#b79ce8; --gold:#d8b46a; --ink:#f1ebfb; --muted:#a596c2; --line:#3b2b58;
+  --ok:#7fd4a8; --warn:#f0b36b; --bad:#ef8a8a;
+  --f-ar:"Amiri","Noto Naskh Arabic",serif;
+  --f-disp:"Marcellus",Georgia,serif;
+  --f-body:"Nunito Sans",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--night);color:var(--ink);font-family:var(--f-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+.wrap{display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start;max-width:1000px;margin:0 auto}
+.intro{max-width:320px;display:flex;flex-direction:column;gap:12px;padding-top:24px}
+.intro h1{font-family:var(--f-disp);font-weight:400;font-size:2rem;margin:0;letter-spacing:.06em}
+.intro .ar{font-family:var(--f-ar);font-size:3rem;color:var(--gold);line-height:1}
+.intro p{color:var(--muted);line-height:1.6;margin:0}
+.phone{width:100%;max-width:390px;height:800px;border-radius:40px;border:8px solid #0b0614;background:var(--plum);position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px -20px rgba(80,40,140,.6)}
+.pattern{position:absolute;inset:0;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 2l8 20 20 8-20 8-8 20-8-20-20-8 20-8z' fill='none' stroke='%23d8b46a' stroke-width='1'/%3E%3C/svg%3E")}
+header.top{padding:18px 18px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;position:relative}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand .ar{font-family:var(--f-ar);font-size:1.9rem;color:var(--gold)}
+.brand .lat{font-family:var(--f-disp);letter-spacing:.2em;font-size:.85rem;color:var(--lilac)}
+main{flex:1;overflow-y:auto;padding:4px 18px 24px;position:relative;display:flex;flex-direction:column;gap:14px}
+.view{display:flex;flex-direction:column;gap:14px}
+.sec{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--lilac);margin-top:4px}
+.meta{font-size:.8rem;color:var(--muted);line-height:1.5}
+.notice{font-size:.75rem;color:var(--muted);line-height:1.55;margin:0}
+.empty{color:var(--muted);font-size:.85rem;text-align:center;padding:18px 10px;line-height:1.6;border:1px dashed var(--line);border-radius:14px}
+.banner{font-size:.78rem;line-height:1.5;padding:10px 12px;border-radius:12px;background:#3a2a14;color:var(--warn)}
+.hadith{background:linear-gradient(160deg,var(--violet),#2a1747);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+.hadith .ar{font-family:var(--f-ar);font-size:1.5rem;color:var(--gold);line-height:1.6}
+.hadith p{margin:0;font-size:.85rem;line-height:1.55}
+.hadith small{color:var(--muted);font-size:.7rem}
+.radius{display:flex;flex-direction:column;gap:6px}
+.radius label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted)}
+.radius b{color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--lilac)}
+.alert{background:var(--night);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%}
+.alert .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.alert h3{margin:0;font-size:1rem}
+.chip{font-size:.7rem;padding:3px 9px;border-radius:99px;background:var(--violet);color:var(--lilac);white-space:nowrap}
+.chip.soon{background:#4a2a1c;color:var(--gold)}
+.going{font-size:.75rem;color:var(--ok)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+button.btn{border:0;border-radius:12px;padding:12px 14px;font:inherit;font-weight:700;cursor:pointer;background:var(--lilac);color:var(--night)}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+button.danger{background:transparent;border:1px solid var(--bad);color:var(--bad)}
+button.btn[disabled]{opacity:.55;cursor:default}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns .btn{flex:1}
+.back{background:none;border:0;color:var(--lilac);font:inherit;cursor:pointer;padding:0;text-align:left}
+.obit{position:relative;width:100%;background:var(--night);color:inherit;font:inherit;cursor:pointer;text-align:center;border:1px solid var(--gold);border-radius:6px;outline:1px solid var(--line);outline-offset:-7px;padding:22px 18px 16px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.obit::before,.obit::after{content:"";position:absolute;left:50%;width:10px;height:10px;background:var(--gold);transform:translateX(-50%) rotate(45deg)}
+.obit::before{top:-6px}.obit::after{bottom:-6px}
+.obit-ar{font-family:var(--f-ar);color:var(--gold);font-size:1.3rem;line-height:1.5}
+.obit-k{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.obit-n{font-family:var(--f-disp);font-weight:400;font-size:1.45rem;margin:2px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.obit-s{font-size:.8rem;color:var(--lilac);font-style:italic}
+.obit-rule{width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:6px 0}
+.obit-d{font-size:.82rem;line-height:1.6;color:var(--ink)}
+.obit-d b{color:var(--gold);font-weight:700}
+.test{font-family:var(--f-body);font-size:.6rem;font-weight:700;letter-spacing:.12em;color:var(--night);background:var(--warn);border-radius:4px;padding:2px 6px}
+.next{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:var(--violet);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:inherit;font:inherit;cursor:pointer;text-align:left}
+.next small{display:block;color:var(--muted);font-size:.7rem}
+.next strong{font-size:1rem}
+.next .cd{font-family:var(--f-disp);color:var(--gold);font-size:1.3rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pr{display:flex;flex-direction:column;gap:6px}
+.pr div{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;background:var(--night);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.pr div.on{border-color:var(--gold);background:linear-gradient(90deg,var(--violet),var(--night))}
+.pr div.past{opacity:.55}
+.pr .ar{font-family:var(--f-ar);color:var(--gold);font-size:1.15rem}
+.pr time{font-family:var(--f-disp);font-size:1.15rem;font-variant-numeric:tabular-nums}
+.daynav{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.daynav button{background:var(--night);border:1px solid var(--line);color:var(--ink);border-radius:10px;width:40px;height:36px;font:inherit;cursor:pointer}
+.daynav strong{text-align:center;font-size:.9rem}
+.car{display:flex;flex-direction:column;gap:8px}
+.track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:8px 1px;scrollbar-width:none;overscroll-behavior-x:contain}
+.track::-webkit-scrollbar{display:none}
+.track>.obit{flex:0 0 100%;scroll-snap-align:center}
+.dots{display:flex;justify-content:center;align-items:center;gap:6px}
+.dots button{width:7px;height:7px;border-radius:99px;border:0;background:var(--line);padding:0;cursor:pointer;transition:width .2s}
+.dots button[aria-current="true"]{background:var(--gold);width:20px}
+.dots span{font-size:.7rem;color:var(--muted);margin-left:6px;font-variant-numeric:tabular-nums}
+.grp-h{display:flex;justify-content:space-between;align-items:baseline;font-size:.82rem;margin-top:6px}
+.grp-h b{color:var(--gold);font-family:var(--f-disp);font-weight:400;font-size:1rem}
+.grp-h span{color:var(--muted);font-size:.72rem}
+.fol{flex:none;background:none;border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:5px 10px;font:inherit;font-size:.72rem;cursor:pointer;white-space:nowrap}
+.fol[aria-pressed="true"]{color:var(--night);background:var(--gold);border-color:var(--gold)}
+.followed{font-size:.68rem;color:var(--gold)}
+.what{background:var(--plum);border-radius:12px;padding:10px 12px;font-size:.82rem;line-height:1.55}
+.what summary{cursor:pointer;color:var(--gold);font-weight:700}
+.what p{margin:8px 0 0}
+.juz button.done{position:relative}
+.juz button.taken.done{background:#1f4a3a;border-color:#2c6b52;color:var(--ok)}
+.juz button.mine.done{background:var(--ok);border-color:var(--ok)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.7rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:4px}
+.lg{display:inline-block;width:10px;height:10px;border-radius:3px;border:1px solid var(--line)}
+.lg.tk{background:var(--violet)}.lg.dn{background:#1f4a3a}.lg.mn{background:var(--gold);border-color:var(--gold)}
+.myjuz{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;background:var(--plum);border-radius:12px;padding:10px 12px;font-size:.85rem}
+.myjuz .btn{padding:8px 12px;font-size:.8rem}
+.tour{position:absolute;inset:0;z-index:20;background:rgba(10,6,20,.82);display:flex;align-items:flex-end;justify-content:center;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
+.tour-card{width:100%;max-width:420px;background:linear-gradient(170deg,var(--violet),var(--night));border:1px solid var(--gold);border-radius:20px;padding:24px 20px 18px;display:flex;flex-direction:column;gap:12px;text-align:center}
+.tour-card .ar{font-family:var(--f-ar);color:var(--gold);font-size:2.2rem;line-height:1.3}
+.tour-card h2{font-family:var(--f-disp);font-weight:400;margin:0;font-size:1.35rem;text-wrap:balance}
+.tour-card p{margin:0;font-size:.9rem;line-height:1.6;color:var(--ink)}
+.tour-dots{display:flex;justify-content:center;gap:6px}
+.tour-dots i{width:7px;height:7px;border-radius:99px;background:var(--line)}
+.tour-dots i.on{background:var(--gold);width:20px}
+.badge{font-size:.62rem;color:var(--gold);border:1px solid currentColor;border-radius:99px;padding:1px 6px;margin-left:6px;vertical-align:middle;font-weight:600}
+.link{background:none;border:0;color:var(--lilac);font:inherit;font-size:.82rem;cursor:pointer;text-align:left;padding:0;text-decoration:underline;text-underline-offset:3px}
+.dname{font-family:var(--f-disp);font-size:1.6rem;margin:0}
+.inna{font-family:var(--f-ar);color:var(--gold);font-size:1.25rem;text-align:center}
+.card{background:var(--night);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.card h4{margin:0;font-size:.92rem}
+.tl{display:flex;flex-direction:column;gap:8px;font-size:.85rem}
+.tl div{display:flex;gap:10px}
+.tl span:first-child{color:var(--gold);min-width:64px;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:99px;background:var(--violet);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--lilac),var(--gold));transition:width .4s}
+.juz{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.juz button{aspect-ratio:1;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-size:.75rem;cursor:pointer;font-variant-numeric:tabular-nums}
+.juz button.taken{background:var(--violet);color:var(--lilac);border-color:var(--violet);cursor:default}
+.juz button.mine{background:var(--gold);color:var(--night);border-color:var(--gold)}
+.dua{font-family:var(--f-ar);font-size:1.3rem;text-align:center;line-height:1.8}
+form{display:flex;flex-direction:column;gap:12px}
+form label,.field{display:flex;flex-direction:column;gap:5px;font-size:.8rem;color:var(--muted)}
+input,select,textarea{background:var(--night);border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--ink);font:inherit;width:100%}
+.check{flex-direction:row !important;align-items:flex-start;gap:8px !important;line-height:1.45}
+.check input{width:auto;margin-top:3px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two>*{min-width:0}
+.step{font-family:var(--f-disp);color:var(--gold);font-size:1rem;margin:6px 0 0}
+.shield{display:flex;flex-direction:column;gap:8px}
+.shield div{display:flex;gap:10px;font-size:.8rem;line-height:1.45}
+.shield b{color:var(--gold);font-family:var(--f-disp);font-weight:400;min-width:18px}
+.radios{display:flex;flex-direction:column;gap:6px}
+.radios label{flex-direction:row;align-items:center;gap:8px;background:var(--night);border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--ink);font-size:.82rem}
+.radios input{width:auto}
+.status{border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;text-align:center;background:var(--violet)}
+.status .ar{font-family:var(--f-ar);font-size:1.8rem;color:var(--gold)}
+.rappel{background:linear-gradient(170deg,var(--violet),var(--night));border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.rappel.hero{padding:22px 18px;text-align:center}
+.rappel .ar{font-family:var(--f-ar);font-size:1.45rem;color:var(--gold);line-height:1.7;text-align:center}
+.rappel p{margin:0;font-size:.92rem;line-height:1.6}
+.rappel .foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rappel small{color:var(--muted);font-size:.72rem}
+.why{font-size:.68rem;color:var(--lilac);letter-spacing:.04em}
+.heart{background:none;border:1px solid var(--line);border-radius:99px;color:var(--muted);font:inherit;font-size:.75rem;padding:4px 10px;cursor:pointer;white-space:nowrap}
+.heart[aria-pressed="true"]{color:var(--gold);border-color:var(--gold)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{background:var(--night);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:6px 11px;font:inherit;font-size:.75rem;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--lilac);color:var(--night);border-color:var(--lilac)}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+.chips.scroll button{flex:none}
+.surahs{display:flex;flex-direction:column;gap:8px}
+.surah{display:flex;align-items:center;gap:12px;background:var(--night);border:1px solid var(--line);border-radius:14px;padding:12px;color:inherit;font:inherit;text-align:left;cursor:pointer;width:100%}
+.surah[disabled]{opacity:.45;cursor:default}
+.surah .n{width:34px;height:34px;flex:none;display:grid;place-items:center;border:1px solid var(--gold);color:var(--gold);transform:rotate(45deg);border-radius:6px;font-size:.75rem}
+.surah .n span{transform:rotate(-45deg)}
+.surah .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.surah .t small{color:var(--muted);font-size:.72rem}
+.surah .a{font-family:var(--f-ar);font-size:1.3rem;color:var(--gold)}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--night);border:1px solid var(--line);border-radius:12px;padding:4px}
+.modes button{background:none;border:0;color:var(--muted);font:inherit;font-size:.78rem;padding:8px;border-radius:9px;cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--violet);color:var(--ink)}
+.sz{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:var(--muted)}
+.sz button{background:var(--night);border:1px solid var(--line);color:var(--ink);border-radius:8px;width:38px;height:30px;font:inherit;cursor:pointer}
+.stitle{text-align:center;display:flex;flex-direction:column;gap:4px}
+.stitle .a{font-family:var(--f-ar);font-size:2rem;color:var(--gold)}
+.stitle small{color:var(--muted)}
+.basmala{font-family:var(--f-ar);text-align:center;font-size:1.4rem;color:var(--lilac)}
+.ayah{border-bottom:1px solid var(--line);padding-block:12px;display:flex;flex-direction:column;gap:8px}
+.ayah .ar{font-family:var(--f-ar);direction:rtl;text-align:right;line-height:2.1;font-size:var(--arsz,1.6rem)}
+.ayah .fr{font-size:.88rem;line-height:1.6}
+.ayah .num{font-size:.68rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.hide-ar .ayah .ar,.hide-fr .ayah .fr{display:none}
+.mbtn{background:var(--violet);border:1px solid var(--line);color:var(--lilac);border-radius:99px;padding:6px 12px;font:inherit;font-size:.72rem;cursor:pointer}
+.mq{background:var(--night);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:12px;align-items:center}
+.mq .d{width:38px;height:38px;flex:none;border-radius:10px;background:var(--violet);color:var(--gold);display:grid;place-items:center;font-size:.8rem;font-weight:700}
+.mq .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mq .t small{color:var(--muted);font-size:.74rem}
+.mq{flex-wrap:wrap}
+.mq .k{font-size:.75rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.don-hero{text-align:center;display:flex;flex-direction:column;gap:6px;padding:8px 0}
+.don-hero .ar{font-family:var(--f-ar);font-size:2.2rem;color:var(--gold);line-height:1.3}
+.money{font-family:var(--f-disp);font-size:1.8rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.need{display:flex;justify-content:space-between;gap:10px;font-size:.85rem;padding-block:6px;border-bottom:1px solid var(--line)}
+.need:last-child{border-bottom:0}
+.need span:last-child{color:var(--gold);font-variant-numeric:tabular-nums;white-space:nowrap}
+.copy{display:flex;gap:6px;align-items:center}
+.copy code{flex:1;min-width:0;overflow-wrap:anywhere;background:var(--plum);padding:8px;border-radius:8px;font-size:.75rem;user-select:all}
+.pill{font-size:.65rem;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.pill.p{color:var(--warn)} .pill.ok{color:var(--ok)} .pill.bad{color:var(--bad)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.8rem}
+.kv dt{color:var(--muted)} .kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+nav{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);background:var(--night);position:relative;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{background:none;border:0;color:var(--muted);font:inherit;font-size:.62rem;padding:10px 2px 14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+nav button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6}
+nav button[aria-current="true"]{color:var(--gold)}
+.toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%);background:var(--gold);color:var(--night);padding:9px 16px;border-radius:99px;font-size:.8rem;font-weight:700;max-width:90%;text-align:center;z-index:5}
+@media (max-width:760px){
+  body{padding:0}
+  .intro{display:none}
+  .wrap{gap:0;max-width:none;height:100%}
+  .phone{height:100%;border-width:0;border-radius:0;max-width:none;box-shadow:none}
+  header.top{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:max(14px,env(safe-area-inset-top,0px))}
+  main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  input,select,textarea{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<script src="vendor/supabase.js"></script>
+<script src="config.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <div class="ar">قيراط</div>
+    <h1>QIRAT</h1>
+    <p>Alertes janaza en Île-de-France, khatma collective pour les défunts, Coran en arabe et en français, rappels personnalisés.</p>
+    <p>Les annonces sont vérifiées avant publication. QIRAT vit uniquement des dons et des partenariats.</p>
+  </div>
+
+  <div class="phone" id="app">
+    <div class="pattern"></div>
+    <header class="top">
+      <div class="brand"><span class="ar">قيراط</span><span class="lat">QIRAT</span></div>
+      <span style="display:flex;gap:6px"><button class="mbtn" type="button" id="open-pr">Horaires</button><button class="mbtn" type="button" id="open-mq">Mosquées</button></span>
+    </header>
+
+    <main id="main">
+      <div class="banner" id="offline" hidden></div>
+
+      <!-- ACCUEIL -->
+      <section class="view" id="v-home">
+        <button class="next" type="button" id="next-pr"><span><small>Prochaine prière · <span id="np-city"></span></small><strong id="np-name">…</strong></span><span class="cd" id="np-time"></span></button>
+        <div class="hadith">
+          <div class="ar">قِيرَاطَانِ مِثْلُ الْجَبَلَيْنِ الْعَظِيمَيْنِ</div>
+          <p>Celui qui assiste à la prière funéraire obtient un qirat. Celui qui reste jusqu'à l'enterrement en obtient deux, chacun comme une immense montagne.</p>
+          <small>Hadith rapporté par al-Bukhari et Muslim</small>
+        </div>
+        <div class="sec">Annonces de janaza</div>
+        <div class="chips scroll" id="home-chips" role="group" aria-label="Afficher les annonces"></div>
+        <div class="radius" id="radius-box">
+          <label for="rad">Autour de <span id="radcity"></span>, dans un rayon de <b id="radv">15 km</b></label>
+          <input type="range" id="rad" min="2" max="80" step="1" value="15">
+        </div>
+        <div id="list" class="view"><div class="empty">Chargement des annonces…</div></div>
+        <button class="link" type="button" id="open-mq2">Voir les mosquées d'Île-de-France</button>
+      </section>
+
+      <!-- DETAIL -->
+      <section class="view" id="v-detail" hidden></section>
+
+      <!-- PRIERES -->
+      <section class="view" id="v-prieres" hidden>
+        <button class="back" type="button" data-go="home">‹ Retour</button>
+        <div class="sec">Horaires de prière · <span id="pr-city"></span></div>
+        <label class="field" for="pr-prof">Horaires de
+          <select id="pr-prof"><option value="std">Ma ville (calcul standard Île-de-France)</option><option value="evry">Grande Mosquée d'Évry-Courcouronnes (horaires officiels)</option></select></label>
+        <div class="daynav"><button type="button" id="pr-prev" aria-label="Jour précédent">‹</button><strong id="pr-date"></strong><button type="button" id="pr-next" aria-label="Jour suivant">›</button></div>
+        <div class="pr" id="pr-list"></div>
+        <div class="meta" id="pr-jumua" hidden>Vendredi : la prière du Jumu'a remplace Dhuhr. Vérifie l'heure du sermon auprès de ta mosquée.</div>
+        <div class="card">
+          <h4>Horaires de ta mosquée</h4>
+          <p class="notice">Le calcul standard est réglé sur les horaires publiés par les mosquées d'Île-de-France (écart de 1 à 2 minutes). Certaines mosquées ont leurs propres réglages, comme Évry, qui a son profil dédié. Pour l'heure exacte de ta mosquée, consulte sa page Mawaqit.</p>
+          <a class="btn ghost" href="https://mawaqit.net/fr/" target="_blank" rel="noopener" style="text-align:center;text-decoration:none;display:block;border-radius:12px;padding:12px">Ouvrir Mawaqit</a>
+        </div>
+        <p class="notice">Change ta ville dans l'onglet Moi.</p>
+      </section>
+
+      <!-- MOSQUEES -->
+      <section class="view" id="v-mosq" hidden>
+        <button class="back" type="button" data-go="home">‹ Retour</button>
+        <div class="sec">Mosquées d'Île-de-France</div>
+        <input id="mq-s" type="search" placeholder="Rechercher une ville ou une mosquée" aria-label="Rechercher une mosquée">
+        <div class="chips scroll" id="mq-chips" role="group" aria-label="Département"></div>
+        <p class="notice">Touche « Suivre » sur ta mosquée de quartier, celle de ta famille… Tu recevras leurs annonces même hors de ton rayon.</p>
+        <div class="meta" id="mq-count"></div>
+        <div class="surahs" id="mq-list"></div>
+        <div class="card">
+          <h4>Une mosquée manque ?</h4>
+          <form id="sg">
+            <label for="sg-name">Nom de la mosquée<input id="sg-name" required maxlength="80"></label>
+            <div class="two">
+              <label for="sg-city">Ville<select id="sg-city"></select></label>
+              <label for="sg-tag">Communauté<select id="sg-tag"><option value="">Non précisée</option><option value="tr">Turque</option><option value="ku">Kurde</option><option value="af">Africaine</option><option value="as">Asie du Sud</option></select></label>
+            </div>
+            <label for="sg-addr">Adresse<input id="sg-addr" maxlength="120" placeholder="Ex : 12 rue de la Paix"></label>
+            <button class="btn ghost" type="submit">Proposer cette mosquée</button>
+          </form>
+        </div>
+        <p class="notice">Liste issue de l'annuaire la-salat.com, complétée par la communauté. Chaque mosquée peut devenir partenaire pour confirmer les annonces de son secteur.</p>
+      </section>
+
+      <!-- DECLARER -->
+      <section class="view" id="v-declare" hidden>
+        <div class="sec">Déclarer une janaza</div>
+        <div class="inna">إِنَّا لِلَّٰهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ</div>
+        <div class="card">
+          <h4>Comment QIRAT empêche les fausses annonces</h4>
+          <div class="shield">
+            <div><b>1</b><span>Ton annonce reste invisible tant qu'elle n'est pas vérifiée. Aucune alerte n'est envoyée avant.</span></div>
+            <div><b>2</b><span>Un modérateur t'appelle, puis confirme auprès de la mosquée ou des pompes funèbres que tu indiques.</span></div>
+            <div><b>3</b><span>Une fois publiée, n'importe qui peut la signaler. À 3 signalements, elle est masquée et revérifiée.</span></div>
+            <div><b>4</b><span>Une fausse déclaration bloque ton compte. L'annonce disparaît d'elle-même après l'enterrement.</span></div>
+          </div>
+        </div>
+        <form id="f">
+          <p class="step">Le défunt</p>
+          <label for="f-name">Nom ou initiales (selon le souhait de la famille)
+            <input id="f-name" required maxlength="60" placeholder="Ex : Mohamed B. ou M. B." autocomplete="off"></label>
+          <div class="two">
+            <label for="f-sex">Homme ou femme
+              <select id="f-sex"><option value="m">Homme</option><option value="f">Femme</option></select></label>
+            <label for="f-age">Âge (facultatif)
+              <input id="f-age" type="number" min="0" max="120" inputmode="numeric"></label>
+          </div>
+          <p class="step">La janaza</p>
+          <label for="f-mosq">Mosquée de la prière
+            <select id="f-mosq"></select></label>
+          <div class="two">
+            <label for="f-date">Date
+              <input id="f-date" type="date" required></label>
+            <label for="f-salat">Après la prière de
+              <select id="f-salat"><option>Fajr</option><option selected>Dhuhr</option><option>Asr</option><option>Maghrib</option><option>Isha</option><option>Jumu'a</option></select></label>
+          </div>
+          <label for="f-cim">Inhumation
+            <input id="f-cim" maxlength="120" placeholder="Ex : carré musulman de Courcouronnes, ou rapatriement"></label>
+          <p class="step">Toi, le déclarant</p>
+          <div class="two">
+            <label for="f-dn">Ton prénom
+              <input id="f-dn" required maxlength="40" autocomplete="given-name"></label>
+            <label for="f-rel">Lien avec le défunt
+              <select id="f-rel"><option>Enfant</option><option>Conjoint</option><option>Frère ou sœur</option><option>Parent</option><option>Proche de la famille</option><option>Imam ou responsable de la mosquée</option></select></label>
+          </div>
+          <label for="f-tel">Ton téléphone (pour la vérification, jamais publié)
+            <input id="f-tel" type="tel" required maxlength="20" autocomplete="tel" placeholder="06 12 34 56 78"></label>
+          <p class="step">Qui peut confirmer le décès ?</p>
+          <div class="radios" role="radiogroup" aria-label="Moyen de vérification">
+            <label><input type="radio" name="vm" value="mosquee" checked> La mosquée de la prière est au courant</label>
+            <label><input type="radio" name="vm" value="pf"> Les pompes funèbres qui s'occupent du défunt</label>
+          </div>
+          <label for="f-pf" id="pf-wrap" hidden>Nom et ville des pompes funèbres
+            <input id="f-pf" maxlength="80" placeholder="Ex : Pompes funèbres musulmanes, Évry"></label>
+          <label class="check" for="f-ok"><input type="checkbox" id="f-ok" required>J'atteste que ces informations sont vraies et que la famille accepte cette annonce.</label>
+          <button class="btn" type="submit" id="f-submit">Envoyer pour vérification</button>
+        </form>
+        <div class="status" id="done" hidden>
+          <div class="ar">جزاك الله خيرا</div>
+          <strong>Annonce reçue, en attente de vérification</strong>
+          <p class="meta" style="margin:0">Un modérateur va t'appeler. Dès confirmation, tous les fidèles du secteur seront prévenus.</p>
+          <button class="btn ghost" type="button" id="again">Retour à l'accueil</button>
+        </div>
+      </section>
+
+      <!-- CORAN -->
+      <section class="view" id="v-coran" hidden>
+        <div id="c-list" class="view">
+          <div class="sec">Le Saint Coran</div>
+          <div class="meta">Texte arabe et traduction française, verset par verset.</div>
+          <div class="surahs" id="surahs"></div>
+        </div>
+        <div id="c-read" class="view" hidden>
+          <button class="back" type="button" id="c-back">‹ Sourates</button>
+          <div class="modes" role="group" aria-label="Langue d'affichage">
+            <button type="button" data-m="both" aria-pressed="true">Les deux</button>
+            <button type="button" data-m="ar" aria-pressed="false">العربية</button>
+            <button type="button" data-m="fr" aria-pressed="false">Français</button>
+          </div>
+          <div class="sz">Taille du texte arabe<span style="display:flex;gap:6px"><button type="button" id="sz-" aria-label="Réduire">A−</button><button type="button" id="szp" aria-label="Agrandir">A+</button></span></div>
+          <div class="stitle"><div class="a" id="s-ar"></div><strong id="s-fr"></strong><small id="s-meta"></small></div>
+          <div class="basmala" id="s-bas">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+          <div id="ayat"></div>
+          <div class="meta" id="c-for" hidden></div>
+        </div>
+      </section>
+
+      <!-- RAPPELS -->
+      <section class="view" id="v-rappels" hidden>
+        <div class="sec">Ton rappel du jour</div>
+        <div id="r-hero"></div>
+        <button class="btn ghost" type="button" id="r-next">Un autre rappel</button>
+        <div class="sec">Thèmes qui te parlent</div>
+        <div class="chips" id="r-themes" role="group" aria-label="Thèmes"></div>
+        <div class="sec">Pour toi ensuite</div>
+        <div id="r-feed" class="view"></div>
+        <p class="notice">Les rappels s'adaptent aux thèmes que tu choisis, aux rappels que tu aimes, au jour de la semaine et aux janazas auxquelles tu participes.</p>
+      </section>
+
+      <!-- DON -->
+      <section class="view" id="v-don" hidden>
+        <div class="don-hero">
+          <div class="ar">صَدَقَةٌ جَارِيَةٌ</div>
+          <p class="meta" style="margin:0">QIRAT n'affiche aucune publicité et ne revend aucune donnée. L'application vit uniquement de tes dons et de nos partenaires. Chaque alerte envoyée, chaque juz lu pour un défunt, tu y as ta part.</p>
+        </div>
+        <div class="card">
+          <h4>Objectif de l'année</h4>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="money" id="d-col">0 €</span><span class="meta" id="d-goal">sur 600 €</span></div>
+          <div class="bar"><i id="d-bar" style="width:0%"></i></div>
+          <button class="btn" type="button" id="d-give">Faire un don</button>
+          <div class="meta" id="d-link-note" hidden></div>
+        </div>
+        <div class="card">
+          <h4>À quoi sert ton don</h4>
+          <div>
+            <div class="need"><span>Publier QIRAT sur l'App Store iPhone</span><span>99 $ / an</span></div>
+            <div class="need"><span>Serveur et notifications pour toute l'Île-de-France</span><span>300 € / an</span></div>
+            <div class="need"><span>Flyers pour les mosquées partenaires</span><span>100 €</span></div>
+            <div class="need"><span>Nom de domaine et site</span><span>100 € / an</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Nos partenaires</h4>
+          <div id="d-partners" class="meta">Aucun partenaire pour l'instant.</div>
+          <p class="notice">Mosquée, pompes funèbres musulmanes, commerce de quartier : rejoins QIRAT en écrivant à l'adresse ci-dessous.</p>
+          <div class="copy"><code id="d-mail">partenariat@qirat.fr</code><button class="btn ghost" type="button" id="d-copy">Copier</button></div>
+        </div>
+      </section>
+
+      <!-- MOI -->
+      <section class="view" id="v-me" hidden>
+        <div class="sec">Mon espace</div>
+        <div class="card">
+          <h4>Ma ville</h4>
+          <select id="me-city" aria-label="Ma ville"></select>
+          <div class="meta">Les distances et les alertes sont calculées depuis cette ville.</div>
+        </div>
+        <div class="card">
+          <h4>Mes mosquées suivies</h4>
+          <div id="me-fol" class="meta"></div>
+          <button class="btn ghost" type="button" id="me-fol-add">Gérer mes mosquées</button>
+        </div>
+        <div class="card">
+          <h4>Mes qirats (privé)</h4>
+          <div class="meta">Visible par toi seul, aucun classement. Deux qirats par janaza où tu t'inscris.</div>
+          <div class="money" id="myq">0</div>
+        </div>
+        <div class="card">
+          <h4>Mes juz réservés</h4>
+          <div class="meta" id="myjuz">Aucun juz réservé pour l'instant.</div>
+        </div>
+        <button class="btn ghost" type="button" id="open-tour">Revoir la présentation</button>
+        <div class="card">
+          <h4>Espace modérateur</h4>
+          <div class="meta" id="ml-state">Réservé à l'équipe QIRAT.</div>
+          <form id="ml-form"><label for="ml-email">Ton e-mail<input id="ml-email" type="email" required autocomplete="email"></label><button class="btn ghost" type="submit">Recevoir le lien de connexion</button></form>
+          <button class="btn ghost" type="button" id="ml-out" hidden>Se déconnecter</button>
+        </div>
+        <button class="btn" type="button" id="open-mod" hidden>Modération</button>
+      </section>
+
+      <!-- MODERATION -->
+      <section class="view" id="v-mod" hidden>
+        <button class="back" type="button" data-go="me">‹ Mon espace</button>
+        <div class="sec">Annonces à vérifier</div>
+        <div id="mod-pending" class="view"></div>
+        <div class="sec">Annonces publiées</div>
+        <div id="mod-pub" class="view"></div>
+        <div class="sec">Mosquées proposées</div>
+        <div id="mod-sug" class="view"></div>
+        <div class="sec">Dons et partenaires</div>
+        <form id="cfg" class="card">
+          <label for="cfg-link">Lien de don (HelloAsso, PayPal…)
+            <input id="cfg-link" type="url" placeholder="https://www.helloasso.com/associations/…"></label>
+          <div class="two">
+            <label for="cfg-col">Montant collecté (€)
+              <input id="cfg-col" type="number" min="0" inputmode="numeric"></label>
+            <label for="cfg-goal">Objectif (€)
+              <input id="cfg-goal" type="number" min="1" inputmode="numeric"></label>
+          </div>
+          <label for="cfg-part">Partenaires (un par ligne)
+            <textarea id="cfg-part" rows="3"></textarea></label>
+          <button class="btn" type="submit">Enregistrer</button>
+        </form>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" hidden></div>
+    <div class="tour" id="tour" hidden role="dialog" aria-modal="true" aria-labelledby="tour-h">
+      <div class="tour-card">
+        <div class="ar" id="tour-ar"></div>
+        <h2 id="tour-h"></h2>
+        <p id="tour-p"></p>
+        <div class="tour-dots" id="tour-dots"></div>
+        <div class="btns"><button class="btn ghost" type="button" id="tour-skip">Passer</button><button class="btn" type="button" id="tour-next">Suivant</button></div>
+      </div>
+    </div>
+
+    <nav>
+      <button type="button" data-v="home" aria-current="true"><svg viewBox="0 0 24 24"><path d="M12 3c-3 3-6 5.5-6 10a6 6 0 0012 0c0-4.5-3-7-6-10z"/></svg>Janazas</button>
+      <button type="button" data-v="declare"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Déclarer</button>
+      <button type="button" data-v="coran"><svg viewBox="0 0 24 24"><path d="M12 6c-2-1.5-5-2-8-1.5V19c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V4.5C17 4 14 4.5 12 6z"/><path d="M12 6v14.5"/></svg>Coran</button>
+      <button type="button" data-v="rappels"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 014 4v12H9a4 4 0 01-4-4z"/><path d="M9 9h6M9 13h4"/></svg>Rappels</button>
+      <button type="button" data-v="don"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg>Don</button>
+      <button type="button" data-v="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Moi</button>
+    </nav>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem("qirat:"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("qirat:"+k,JSON.stringify(v))}catch(e){}}};
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+const todayISO=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+
+/* ---------- Mosquées ---------- */
+const deps={"75":"Paris","77":"Seine-et-Marne","78":"Yvelines","91":"Essonne","92":"Hauts-de-Seine","93":"Seine-Saint-Denis","94":"Val-de-Marne","95":"Val-d'Oise"};
+const C={
+"Paris 5e":[48.844,2.350],"Paris 10e":[48.876,2.360],"Paris 11e":[48.859,2.380],"Paris 12e":[48.840,2.388],"Paris 13e":[48.828,2.362],"Paris 14e":[48.829,2.323],"Paris 17e":[48.887,2.307],"Paris 18e":[48.892,2.348],"Paris 19e":[48.887,2.385],"Paris 20e":[48.864,2.398],
+"Brie-Comte-Robert":[48.692,2.610],"Bussy-Saint-Georges":[48.841,2.703],"Champs-sur-Marne":[48.853,2.603],"Chelles":[48.879,2.590],"Combs-la-Ville":[48.664,2.564],"Coulommiers":[48.815,3.084],"Gretz-Armainvilliers":[48.741,2.735],"La Ferté-sous-Jouarre":[48.949,3.128],"Lieusaint":[48.633,2.549],"Lognes":[48.836,2.628],"Meaux":[48.960,2.879],"Moissy-Cramayel":[48.626,2.593],"Nangis":[48.556,3.015],"Noisiel":[48.847,2.628],"Ozoir-la-Ferrière":[48.763,2.672],"Roissy-en-Brie":[48.791,2.648],"Savigny-le-Temple":[48.574,2.583],"Torcy":[48.850,2.651],"Villenoy":[48.942,2.862],"Villeparisis":[48.942,2.615],
+"Achères":[48.961,2.069],"Aubergenville":[48.959,1.855],"Carrières-sous-Poissy":[48.948,2.040],"Chanteloup-les-Vignes":[48.977,2.031],"Ecquevilly":[48.952,1.921],"Fontenay-le-Fleury":[48.813,2.049],"Guyancourt":[48.773,2.074],"La Celle-Saint-Cloud":[48.850,2.135],"Les Mureaux":[48.991,1.917],"Limay":[48.995,1.737],"Mantes-la-Jolie":[48.990,1.717],"Mantes-la-Ville":[48.975,1.711],"Maurepas":[48.765,1.920],"Meulan-en-Yvelines":[49.007,1.908],"Montigny-le-Bretonneux":[48.771,2.033],"Plaisir":[48.823,1.948],"Poissy":[48.929,2.046],"Trappes":[48.776,2.002],"Versailles":[48.804,2.130],"Élancourt":[48.784,1.956],"Épône":[48.955,1.818],
+"Athis-Mons":[48.709,2.389],"Brunoy":[48.698,2.505],"Brétigny-sur-Orge":[48.611,2.306],"Chilly-Mazarin":[48.703,2.315],"Corbeil-Essonnes":[48.611,2.481],"Dourdan":[48.529,2.011],"Draveil":[48.684,2.415],"Grigny":[48.654,2.392],"Les Ulis":[48.682,2.170],"Longjumeau":[48.694,2.296],"Massy":[48.730,2.276],"Palaiseau":[48.715,2.245],"Ris-Orangis":[48.651,2.414],"Saint-Michel-sur-Orge":[48.635,2.311],"Sainte-Geneviève-des-Bois":[48.646,2.323],"Savigny-sur-Orge":[48.680,2.350],"Vigneux-sur-Seine":[48.701,2.417],"Égly":[48.580,2.223],"Étampes":[48.435,2.161],"Évry-Courcouronnes":[48.624,2.429],
+"Antony":[48.754,2.297],"Asnières-sur-Seine":[48.912,2.288],"Bagneux":[48.796,2.309],"Chaville":[48.808,2.188],"Clamart":[48.800,2.266],"Clichy":[48.904,2.306],"Colombes":[48.923,2.252],"Courbevoie":[48.897,2.252],"Gennevilliers":[48.933,2.293],"Malakoff":[48.817,2.297],"Montrouge":[48.816,2.316],"Nanterre":[48.892,2.207],"Rueil-Malmaison":[48.877,2.181],"Villeneuve-la-Garenne":[48.937,2.325],
+"Aubervilliers":[48.914,2.383],"Aulnay-sous-Bois":[48.938,2.497],"Bagnolet":[48.869,2.418],"Bobigny":[48.908,2.439],"Bondy":[48.902,2.483],"Clichy-sous-Bois":[48.910,2.546],"Drancy":[48.923,2.446],"Dugny":[48.953,2.416],"Gagny":[48.883,2.533],"La Courneuve":[48.928,2.396],"Le Blanc-Mesnil":[48.938,2.461],"Le Bourget":[48.935,2.425],"Livry-Gargan":[48.919,2.535],"Montfermeil":[48.898,2.567],"Montreuil":[48.861,2.443],"Neuilly-sur-Marne":[48.853,2.530],"Noisy-le-Grand":[48.848,2.552],"Noisy-le-Sec":[48.891,2.460],"Pantin":[48.894,2.409],"Romainville":[48.884,2.435],"Rosny-sous-Bois":[48.871,2.486],"Saint-Denis":[48.936,2.357],"Sevran":[48.939,2.527],"Stains":[48.956,2.385],"Tremblay-en-France":[48.950,2.568],"Villepinte":[48.962,2.533],"Épinay-sur-Seine":[48.955,2.309],
+"Alfortville":[48.805,2.420],"Arcueil":[48.806,2.336],"Boissy-Saint-Léger":[48.751,2.511],"Bonneuil-sur-Marne":[48.769,2.488],"Champigny-sur-Marne":[48.817,2.515],"Chennevières-sur-Marne":[48.798,2.534],"Chevilly-Larue":[48.766,2.353],"Choisy-le-Roi":[48.763,2.409],"Créteil":[48.790,2.455],"Fontenay-sous-Bois":[48.851,2.477],"Fresnes":[48.756,2.322],"Gentilly":[48.813,2.344],"Ivry-sur-Seine":[48.813,2.385],"L'Haÿ-les-Roses":[48.780,2.337],"Le Kremlin-Bicêtre":[48.810,2.358],"Maisons-Alfort":[48.806,2.438],"Orly":[48.744,2.393],"Sucy-en-Brie":[48.769,2.522],"Valenton":[48.745,2.467],"Villejuif":[48.792,2.364],"Villeneuve-Saint-Georges":[48.733,2.449],"Villiers-sur-Marne":[48.827,2.545],"Vitry-sur-Seine":[48.787,2.392],
+"Argenteuil":[48.947,2.248],"Bessancourt":[49.037,2.209],"Cergy":[49.036,2.063],"Ermont":[48.990,2.258],"Garges-lès-Gonesse":[48.972,2.400],"Gonesse":[48.987,2.449],"Goussainville":[49.031,2.464],"Herblay-sur-Seine":[48.990,2.165],"Montigny-lès-Cormeilles":[48.994,2.195],"Montmagny":[48.973,2.346],"Persan":[49.152,2.272],"Pontoise":[49.051,2.101],"Saint-Gratien":[48.972,2.285],"Saint-Ouen-l'Aumône":[49.044,2.111],"Saint-Prix":[49.012,2.263],"Sarcelles":[48.997,2.380],"Taverny":[49.026,2.222],"Vauréal":[49.030,2.033],"Villiers-le-Bel":[49.008,2.391],"Éragny":[49.017,2.092]};
+const RAW=`75|Grande Mosquée de Paris|Paris 5e|43 rue Geoffroy-Saint-Hilaire
+75|Mosquée Ali ibn Abi Talib|Paris 10e|83 rue du Faubourg Saint-Denis
+75|Mosquée Omar|Paris 11e|2 rue Morand
+75|Mosquée Abou Bakr|Paris 11e|39 bd de Belleville
+75|Mosquée Al Houda|Paris 11e|61 rue de Charonne
+75|Mosquée Essunna|Paris 11e|5 impasse Questre
+75|Mosquée Ayoub El-Ançari|Paris 11e|12 rue Godefroy Cavaignac
+75|Mosquée Al Taqwa (foyer)|Paris 11e|7 rue de la Petite Pierre
+75|Salle de prière (foyer)|Paris 11e|10 rue Desargues
+75|Association Nour|Paris 12e|11 rue Corbineau
+75|Salle de prière (foyer)|Paris 13e|43 rue Albert
+75|Salle de prière (Jumu'a uniquement)|Paris 13e|15 rue de Patay
+75|Salle de prière|Paris 14e|130 rue Vercingétorix
+75|Salle de prière (foyer)|Paris 17e|18 bd du Fort de Vaux
+75|Mosquée Myrha|Paris 18e|28 rue Myrha
+75|Mosquée de l'Institut des Cultures d'Islam|Paris 18e|56 rue Stephenson
+75|Mosquée Philippe de Girard|Paris 18e|77 rue Philippe de Girard
+75|Mosquée Adda'wa|Paris 19e|39 rue de Tanger
+75|Mosquée de la Villette|Paris 19e|15 av. de la Porte de la Villette
+75|Mosquée Labois-Rouillon|Paris 19e|11 rue Labois-Rouillon
+75|Salle de prière Romainville|Paris 19e|48 rue de Romainville
+75|Mosquée Anwar El Madina|Paris 20e|27 rue Étienne Marey
+75|Salle de prière (foyer Hamza)|Paris 20e|15 rue Bisson
+75|Salle de prière (foyer)|Paris 20e|23 rue du Retrait
+75|Salle de prière (foyer)|Paris 20e|10 rue Fernand Léger
+77|Mosquée de Brie-Comte-Robert|Brie-Comte-Robert|1 impasse du Verger
+77|Centre islamique du Val de Bussy|Bussy-Saint-Georges|11 allée Madame de Montespan
+77|Mosquée de Champs-sur-Marne|Champs-sur-Marne|rue Albert Schweitzer
+77|Grande Mosquée de Chelles|Chelles|101 chemin de la Guette
+77|Mosquée de Combs-la-Ville|Combs-la-Ville|
+77|Grande Mosquée de Coulommiers|Coulommiers|11 rue Maurice Sujet
+77|Mosquée de Gretz|Gretz-Armainvilliers|10 allée des Pommiers
+77|Mosquée Annour|La Ferté-sous-Jouarre|25 av. Franklin Roosevelt
+77|Grande Mosquée de Lieusaint|Lieusaint|6 rue Neuve
+77|Grande Mosquée de Lognes|Lognes|bd du Segrais
+77|Centre Musulman de Meaux|Meaux|30 bd du Chevalier Bayard
+77|Association islamique de Meaux et sa région|Meaux|1 rue Sébastien de Brossard
+77|Grande Mosquée de Moissy-Cramayel|Moissy-Cramayel|249 rue de Noisement
+77|Mosquée de Nangis|Nangis|13 rue des Tanneries
+77|Mosquée de Noisiel|Noisiel|Grande av. des Bois
+77|Mosquée d'Ozoir (ACCMO)|Ozoir-la-Ferrière|10 av. Berthelot
+77|Grande Mosquée de Roissy-en-Brie|Roissy-en-Brie|9 av. Jean Monnet
+77|Mosquée Al-Badri|Roissy-en-Brie|1 square Louis Blanc
+77|Grande Mosquée de Savigny-le-Temple|Savigny-le-Temple|14 rue Elsa Triolet
+77|Mosquée Bediuzzaman Said-i Nursi|Savigny-le-Temple|25 rue Elsa Triolet|tr
+77|Mosquée de Torcy|Torcy|16 bis av. de Lingenfeld
+77|Mosquée de Villenoy|Villenoy|67 rue Aristide Briand
+77|Mosquée de Villeparisis|Villeparisis|1 rue de l'Industrie
+78|Mosquée de la Paix Assalam|Achères|7 rue des Bauches
+78|Mosquée d'Aubergenville|Aubergenville|58 rue du Plateau
+78|Mosquée de Carrières-sous-Poissy|Carrières-sous-Poissy|120 rue Jean-Joseph Thoyot
+78|Grande Mosquée de Chanteloup-les-Vignes|Chanteloup-les-Vignes|1 rue Mais
+78|Mosquée d'Ecquevilly|Ecquevilly|1 ter rue de la République
+78|Mosquée de Fontenay-le-Fleury|Fontenay-le-Fleury|5 chemin du Lavoir
+78|Mosquée de Guyancourt|Guyancourt|46 rue du Moulin Renard
+78|Mosquée ASMC|La Celle-Saint-Cloud|10 allée de Montaigu
+78|Centre islamique Tariq ibn Ziyad|Les Mureaux|23 rue Gambetta
+78|Grande Mosquée de Limay|Limay|1 impasse des Grands Vals
+78|Grande Mosquée de Mantes-la-Jolie|Mantes-la-Jolie|5 rue Denis Papin
+78|Grande Mosquée Othmane Ibn Affane|Mantes-la-Jolie|rue Jean Honoré Fragonard
+78|Mosquée de Mantes-Sud|Mantes-la-Ville|10 rue des Merisiers
+78|Mosquée El Fethe|Mantes-la-Ville|24 rue Jean Moulin
+78|Association des Musulmans de Maurepas|Maurepas|3 place du Doubs
+78|Mosquée de Meulan|Meulan-en-Yvelines|13 bis av. des Aulnes
+78|Mosquée de Montigny-le-Bretonneux|Montigny-le-Bretonneux|1 rue Joël le Theule
+78|Grande Mosquée de Plaisir|Plaisir|870 rue du Valibout
+78|Mosquée de Poissy|Poissy|56 av. de la Maladrerie
+78|Grande Mosquée de Trappes|Trappes|49 av. Hector Berlioz
+78|Mosquée de Versailles|Versailles|31 rue Jean Mermoz
+78|Mosquée Attawba|Élancourt|11 rue de Liège
+78|Mosquée Alif|Élancourt|allée des Bourreliers
+78|Mosquée Al Ihssane|Épône|90 av. du Professeur Émile Sergent
+91|Mosquée d'Athis-Mons|Athis-Mons|10 rue des Plantes
+91|Mosquée Le Figuier|Athis-Mons|10 rue Marx Dormoy
+91|Mosquée des Hautes-Mardelles|Brunoy|101 rue de Cerçay
+91|Grande Mosquée de Brétigny-sur-Orge|Brétigny-sur-Orge|74 chemin du Vieux Pavé
+91|Grande Mosquée de Chilly-Mazarin|Chilly-Mazarin|rue des Édouets
+91|Grande Mosquée de Corbeil-Essonnes|Corbeil-Essonnes|2 av. du Général de Gaulle
+91|Mosquée Échange et Partage|Corbeil-Essonnes|20 rue des Castors
+91|Mosquée UFTC|Corbeil-Essonnes|38 rue Émile Zola
+91|Mosquée des Amis du Dourdannais|Dourdan|25 rue de la Gaudrée
+91|Mosquée de Draveil|Draveil|75 bd du Général de Gaulle
+91|Mosquée des Grandes Pièces|Draveil|2 allée des Grandes Pièces
+91|Mosquée de Grigny|Grigny|3 rue Avicenne
+91|Grande Mosquée des Ulis|Les Ulis|1 rue d'Armagnac
+91|Mosquée de Longjumeau|Longjumeau|31 rue Pasteur
+91|Grande Mosquée de Massy|Massy|123 av. de Paris
+91|Mosquée Fatiha|Massy|
+91|Mosquée de Palaiseau|Palaiseau|11 rue Salvador Allende
+91|Mosquée de Ris-Orangis|Ris-Orangis|3 rue Jean Moulin
+91|Mosquée Kuba|Ris-Orangis|26 av. Paul Langevin
+91|Mosquée de Saint-Michel-sur-Orge|Saint-Michel-sur-Orge|1 rue Saint-Saëns
+91|Grande Mosquée de Sainte-Geneviève-des-Bois|Sainte-Geneviève-des-Bois|44 bis av. Jacques Duclos
+91|Mosquée de Savigny-sur-Orge|Savigny-sur-Orge|29 rue des Prés Saint-Martin
+91|Grande Mosquée de Vigneux-sur-Seine|Vigneux-sur-Seine|15 rue Galilée
+91|Mosquée DITIB d'Arpajon|Égly|12 rue des Meuniers|tr
+91|Mosquée d'Égly|Égly|52 bis av. d'Arpajon
+91|Mosquée Mohammed VI|Étampes|2 av. du 8 Mai 1945
+91|Mosquée turque d'Étampes|Étampes|13 rue du Pont Saint-Jean|tr
+91|Mosquée Étampes Nord|Étampes|5 rue de la Croix de Vernailles
+91|Grande Mosquée d'Évry-Courcouronnes|Évry-Courcouronnes|20 rue Georges Brassens
+91|Mosquée Rahma|Évry-Courcouronnes|2 rue Descartes
+91|Mosquée kurde Ahmede Xane|Évry-Courcouronnes|18 rue du Plessis Briard|ku
+92|Mosquée El Asr|Antony|5 rue de Megève
+92|Mosquée Al-Houda|Antony|7 av. Sommer
+92|Grande Mosquée d'Asnières|Asnières-sur-Seine|23 rue de l'Abbé Lemire
+92|Grande Mosquée de Bagneux|Bagneux|67 bis av. Albert Petit
+92|Mosquée de Chaville|Chaville|42 rue de la Passerelle
+92|Centre Musulman de Clamart|Clamart|298 av. du Général de Gaulle
+92|Mosquée Nour Al Manar|Clichy|19 rue des 3 Pavillons
+92|Mosquée Mohamed V|Colombes|19 rue d'Épinay
+92|Mosquée de Courbevoie-La Défense|Courbevoie|105 rue des Fauvelles
+92|Mosquée Essalem|Gennevilliers|3 rue Poissonnière
+92|Mosquée de Malakoff|Malakoff|1 rue Avaulée
+92|Mosquée de Montrouge|Montrouge|51 rue Racine
+92|Grande Mosquée Okba Ibn Nafaa|Nanterre|331 av. de la République
+92|Mosquée de l'Institut Ibn Badis|Nanterre|227 av. Georges Clemenceau
+92|Centre Culturel Musulman de Rueil|Rueil-Malmaison|20 rue des Mazurières
+92|Grande Mosquée de Villeneuve-la-Garenne|Villeneuve-la-Garenne|rue Arthur Guillemain
+93|Mosquée de la Fraternité|Aubervilliers|112 bd Félix Faure
+93|Mosquée Al-Ansar|Aubervilliers|5 ruelle de la Grande Cour
+93|Mosquée Jamé Bangladesh|Aubervilliers|6 rue Guyard Delalain
+93|Grande Mosquée Al-Irchad|Aulnay-sous-Bois|11 rue Louison Bobet
+93|Grande Mosquée d'Aulnay-sous-Bois (Assalam)|Aulnay-sous-Bois|283 chemin de Roissy en France
+93|Mosquée de Chanteloup|Aulnay-sous-Bois|
+93|Mosquée d'Aulnay-sous-Bois|Aulnay-sous-Bois|11 rue Jacques Anquetil
+93|Grande Mosquée de Bagnolet|Bagnolet|60 rue Hoche
+93|Centre Culturel Musulman Zeytouna|Bagnolet|45 rue Charles Delescluze
+93|Mosquée du Cimetière Musulman|Bobigny|38 rue Arago
+93|Grande Mosquée de Bobigny (Assalam)|Bobigny|14 rue de la Bergère
+93|Mosquée de l'Étoile|Bobigny|56 rue de l'Étoile
+93|Salle de prière Allende|Bobigny|21 av. du Président Salvador Allende
+93|Grande Mosquée de Bondy|Bondy|58 chemin de Groslay
+93|Mosquée de Bondy|Bondy|43 rue Louis Auguste Blanqui
+93|Association Islam pour Tous|Bondy|56 chemin de Groslay
+93|Mosquée Bilal|Clichy-sous-Bois|9 allée de la Forestière
+93|Grande Mosquée de Drancy|Drancy|60 rue Saint-Stenay
+93|Mosquée Nouh|Dugny|6 rue Louise Michel
+93|Mosquée de Gagny|Gagny|21 allée Georges Guyonnet
+93|Mosquée Maryam|Gagny|122 rue Jules Guesde
+93|Centre Mehfile-Zainab|La Courneuve|15 av. Gabriel Péri
+93|Mosquée Minhaj-ul-Quran|La Courneuve|1 rue de la Prévoté
+93|Mosquée de la Prévoté|La Courneuve|20 rue de la Prévoté
+93|Mosquée El İhsan|Le Blanc-Mesnil|160 rue Maxime Gorki
+93|Mosquée At-Tawhid|Le Blanc-Mesnil|90 av. Danielle Casanova
+93|Mosquée El-Irchad|Le Bourget|28 rue du Commandant Rolland
+93|Mosquée de Livry-Gargan|Livry-Gargan|109 bd Robert Schuman
+93|Grande Mosquée de Montfermeil|Montfermeil|47 av. des Hortensias
+93|Grande Mosquée de Montreuil (Al Oumma)|Montreuil|215 rue de Rosny
+93|Mosquée Al-Islah|Montreuil|70 rue des Sorins
+93|Mosquée Assalam|Montreuil|30 rue Édouard Branly
+93|Mosquée Eibad Arrahmane|Montreuil|41 rue Gaston Lauriau
+93|Mosquée Al-Mohsinin|Montreuil|163 bd Théophile Sueur
+93|Mosquée de Neuilly-sur-Marne|Neuilly-sur-Marne|18 rue d'Auvergne
+93|Mosquée du Champy|Noisy-le-Grand|2 rue de la Butte Verte
+93|Mosquée Al-Fath|Noisy-le-Sec|134 rue de Brément
+93|Grande Mosquée de Pantin|Pantin|48 rue Racine
+93|Mosquée Hamza|Pantin|7 rue Honoré
+93|Mosquée comorienne de Pantin|Pantin|22 rue Gabrielle Josserand
+93|Mosquée du foyer|Pantin|32 rue Magenta
+93|Mosquée Niya|Romainville|43 rue des Chantaloups
+93|Mosquée Fraternité|Romainville|52 rue de la Fraternité
+93|Grande Mosquée de Rosny-sous-Bois|Rosny-sous-Bois|8 rue Conrad Adenauer
+93|Mosquée du Londeau|Rosny-sous-Bois|38 chemin de Montreuil à Claye
+93|Grande Mosquée de Saint-Denis (Imam Malik)|Saint-Denis|115 rue Henri Barbusse
+93|Grande Mosquée de La Plaine Saint-Denis|Saint-Denis|7 rue du Bailly
+93|Mosquée Othmane|Sevran|49 chemin de Savigny
+93|Mosquée El Rahma|Sevran|52 av. du Dr Schaffner
+93|Mosquée CIMG|Sevran|4 rue Henri Poincaré
+93|Grande Mosquée de Stains|Stains|7 av. de Stalingrad
+93|Mosquée CCIBF|Stains|127 bd Maxime Gorki
+93|Grande Mosquée de Tremblay-en-France|Tremblay-en-France|30 av. de la Résistance
+93|Grande Mosquée de Villepinte|Villepinte|1 av. Pasteur
+93|Mosquée d'Épinay-sur-Seine|Épinay-sur-Seine|71 av. de la Marne
+94|Mosquée d'Alfortville|Alfortville|40 rue de Nice
+94|Mosquée d'Arcueil|Arcueil|81 av. François Vincent Raspail
+94|Grande Mosquée El-Nour|Boissy-Saint-Léger|1 rue de la Fin de la Guerre d'Algérie
+94|Mosquée Andalous|Boissy-Saint-Léger|21 bd de la Gare
+94|Mosquée de Bonneuil-sur-Marne|Bonneuil-sur-Marne|6 av. de Boissy
+94|Grande Mosquée de Champigny (Al Amine)|Champigny-sur-Marne|58 av. Boileau
+94|Amicale des Musulmans Campinois|Champigny-sur-Marne|36 rue Eugène Varlin
+94|Mosquée Al Forqane|Chennevières-sur-Marne|89 av. du Bois
+94|Grande Mosquée de Chevilly-Larue|Chevilly-Larue|14 rue de Bretagne
+94|Mosquée El Tawhid|Choisy-le-Roi|8 voie des Roses
+94|Mosquée de Choisy-le-Roi|Choisy-le-Roi|6 voie des Roses
+94|Grande Mosquée de Créteil (Sahaba)|Créteil|4 rue Jean Gabin
+94|Mosquée Ibrahim Al Khalil|Créteil|11 rue du Dr Ramon
+94|Mosquée des Coteaux|Créteil|38 rue de Saussure
+94|Grande Mosquée de Fontenay-sous-Bois (Essalam)|Fontenay-sous-Bois|36 av. Victor Hugo
+94|Mosquée ACMF|Fontenay-sous-Bois|10 rue de la Mare à Guillaume
+94|Mosquée de Fresnes|Fresnes|10 rue Hélène Boucher
+94|Mosquée de Gentilly|Gentilly|140 rue Gabriel Péri
+94|Mosquée d'Ivry-sur-Seine|Ivry-sur-Seine|40 rue Jean-Jacques Rousseau
+94|Mosquée de L'Haÿ-les-Roses|L'Haÿ-les-Roses|23 rue Henri Thirard
+94|Grande Mosquée du Kremlin-Bicêtre|Le Kremlin-Bicêtre|35 rue John Fitzgerald Kennedy
+94|Mosquée Assalam|Maisons-Alfort|138 av. de la Liberté
+94|Grande Mosquée d'Orly|Orly|9 av. Marcel Cachin
+94|Mosquée de Sucy-en-Brie|Sucy-en-Brie|rue Delacroix
+94|Mosquée de Valenton|Valenton|2 rue du 11 Novembre 1918
+94|Mosquée de Villejuif|Villejuif|26 rue Roger Morinet
+94|Mosquée Al-Hidaya|Villeneuve-Saint-Georges|29 rue Émile Zola
+94|Mosquée Al Mouhsinine|Villeneuve-Saint-Georges|50 av. de Valenton
+94|Mosquée Al-Ihsan|Villiers-sur-Marne|8 bd de Friedberg
+94|Mosquée Al-Islah|Villiers-sur-Marne|46 route de Bry
+94|Mosquée de Vitry-sur-Seine|Vitry-sur-Seine|27 rue Elsa Triolet
+94|Mosquée Ar-Rahma|Vitry-sur-Seine|21 rue Broussais
+95|Grande Mosquée d'Argenteuil|Argenteuil|2 bd de la Résistance
+95|Mosquée Assalam|Argenteuil|18 av. du Parc
+95|Centre Socioculturel Assalam|Argenteuil|20 av. du Parc
+95|Mosquée En-Nour|Argenteuil|2 allée Beethoven
+95|Mosquée de Bessancourt|Bessancourt|av. Charles de Gaulle
+95|Grande Mosquée de Cergy|Cergy|26 av. du Hazay
+95|Grande Mosquée d'Ermont (Arrahma)|Ermont|140 rue du 18 Juin
+95|Mosquée de la Muette|Garges-lès-Gonesse|26 bd de la Muette
+95|Mosquée Hamza|Garges-lès-Gonesse|rue Noyer des Belles Filles
+95|Mosquée de Gonesse|Gonesse|34 rue Félix Chobert
+95|Mosquée de Goussainville|Goussainville|rue David Wakx
+95|Mosquée Savoir et Connaissance|Herblay-sur-Seine|3 rue Balzac
+95|Grande Mosquée de Montigny-lès-Cormeilles|Montigny-lès-Cormeilles|19 rue de l'Espérance
+95|Grande Mosquée de Montmagny (Centre Salam)|Montmagny|110 rue d'Épinay
+95|Grande Mosquée de Persan|Persan|71 av. Gaston Vermeire
+95|Mosquée Sultan Ahmet Camii|Pontoise|10 rue Ampère|tr
+95|Mosquée de Pontoise|Pontoise|1 av. du Maréchal de Lattre de Tassigny
+95|Association Musulmane de Pontoise|Pontoise|rue de Picardie
+95|Mosquée de Saint-Gratien|Saint-Gratien|24 rue Pierre Curie
+95|Mosquée de Saint-Ouen-l'Aumône|Saint-Ouen-l'Aumône|95 rue du Mail
+95|Masjid Moubarak|Saint-Prix|52 rue Louis et Gérald Donzelle
+95|Grande Mosquée de Sarcelles|Sarcelles|14 allée Bernard Palissy
+95|Mosquée Kitab wa Sunnah|Sarcelles|5 allée François de Chateaubriand
+95|Mosquée JMS|Sarcelles|5 av. du Stade
+95|Mosquée des Rosiers|Sarcelles|
+95|Mosquée de Taverny|Taverny|273 rue de Paris
+95|Grande Mosquée de Vauréal|Vauréal|6 av. Louise Michel
+95|Mosquée de Villiers-le-Bel|Villiers-le-Bel|3 allée de Derrière les Murs
+95|Mosquée Quba|Villiers-le-Bel|2 place Victor Hugo
+95|Association des Français Musulmans|Villiers-le-Bel|11 rue d'Hérivaux
+95|Mosquée Essalam|Éragny|82 rue Claude Bernard`;
+
+let M=[],EXTRA=[];
+function buildM(){M=RAW.split("\n").map(l=>l.split("|")).map(([dep,name,city,addr,tag])=>({dep,name,city,addr:addr||"",tag:tag||"",lat:C[city][0],lon:C[city][1]}))
+  .concat(EXTRA.filter(x=>C[x.city]).map(x=>({dep:x.dep,name:x.name,city:x.city,addr:x.addr||"",tag:x.tag||"",lat:C[x.city][0],lon:C[x.city][1],extra:true})));M.forEach((m,i)=>m.i=i)}
+buildM();
+const TAGS={tr:"Turque",ku:"Kurde",af:"Africaine",as:"Asie du Sud"};
+function hav(a,b){const R=6371,r=x=>x*Math.PI/180,dl=r(b[0]-a[0]),dn=r(b[1]-a[1]);const h=Math.sin(dl/2)**2+Math.cos(r(a[0]))*Math.cos(r(b[0]))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+const cities=[...new Map(M.map(m=>[m.city,m])).values()].sort((a,b)=>a.city.localeCompare(b.city,"fr"));
+let myCity=store.get("city","Évry-Courcouronnes");
+const here=()=>{const c=cities.find(c=>c.city===myCity)||cities[0];return[c.lat,c.lon]};
+const km=(lat,lon)=>hav(here(),[lat,lon]);
+const fmtKm=k=>k.toFixed(1).replace(".",",")+" km";
+/* ---------- Horaires de prière (calcul astronomique) ---------- */
+const PROFILES={std:{label:"Calcul standard Île-de-France",fa:12.6,ia:12.9,o:{dhuhr:5,asr:3,maghrib:4}},
+  evry:{label:"Grande Mosquée d'Évry-Courcouronnes",fa:14.9,ia:15.5,o:{dhuhr:16,asr:15,maghrib:2},lat:48.624,lon:2.429}};
+const PT=(function(){
+  const r=d=>d*Math.PI/180,dg=x=>x*180/Math.PI,fa=a=>((a%360)+360)%360,fh=h=>((h%24)+24)%24;
+  function jd(y,m,d){if(m<=2){y-=1;m+=12}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5}
+  function sun(j){const D=j-2451545,g=fa(357.529+0.98560028*D),q=fa(280.459+0.98564736*D),L=fa(q+1.915*Math.sin(r(g))+0.02*Math.sin(r(2*g))),e=23.439-0.00000036*D;
+    const RA=fh(dg(Math.atan2(Math.cos(r(e))*Math.sin(r(L)),Math.cos(r(L))))/15);return{decl:dg(Math.asin(Math.sin(r(e))*Math.sin(r(L)))),eqt:q/15-RA}}
+  return function(date,lat,lon,prof){prof=prof||PROFILES.std;
+    const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();
+    const tz=-new Date(y,m-1,d,12).getTimezoneOffset()/60;const J=jd(y,m,d)-lon/(15*24);
+    const at=t=>sun(J+t/24);
+    const noon=t=>fh(12-at(t).eqt);
+    const angleT=(ang,t,ccw)=>{const s=at(t),dec=s.decl;const v=dg(Math.acos((-Math.sin(r(ang))-Math.sin(r(dec))*Math.sin(r(lat)))/(Math.cos(r(dec))*Math.cos(r(lat)))))/15;return noon(t)+(ccw?-v:v)};
+    const asrT=(f,t)=>{const dec=at(t).decl;const ang=-dg(Math.atan(1/(f+Math.tan(r(Math.abs(lat-dec))))));return angleT(ang,t)};
+    const raw={fajr:angleT(prof.fa,5,true),shuruq:angleT(0.833,6,true),dhuhr:noon(12),asr:asrT(1,13),maghrib:angleT(0.833,18),isha:angleT(prof.ia,18)};
+    const out={};for(const k in raw){let h=raw[k]+tz-lon/15+((prof.o||{})[k]||0)/60;out[k]=new Date(y,m-1,d,0,0,0,Math.round(h*3600)*1000)}
+    return out}
+})();
+const PNAMES={fajr:["Fajr","الفجر"],shuruq:["Lever du soleil","الشروق"],dhuhr:["Dhuhr","الظهر"],asr:["Asr","العصر"],maghrib:["Maghrib","المغرب"],isha:["Isha","العشاء"]};
+const hm=d=>d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}).replace(":"," h ");
+function timesFor(dateStr){const [y,m,d]=dateStr.split("-").map(Number);const h=here();return PT(new Date(y,m-1,d),h[0],h[1])}
+function nextPrayer(){const now=new Date();const t=ptFor(now);for(const k of ["fajr","dhuhr","asr","maghrib","isha"])if(t[k]>now)return{k,at:t[k]};const tm=new Date(now.getTime()+864e5);return{k:"fajr",at:ptFor(tm).fajr}}
+let prof=store.get("prof","std");if(!PROFILES[prof])prof="std";
+const ptFor=d=>prof==="evry"?PT(d,PROFILES.evry.lat,PROFILES.evry.lon,PROFILES.evry):PT(d,...here(),PROFILES.std);
+function salatAt(j){const k={Fajr:"fajr",Dhuhr:"dhuhr",Asr:"asr",Maghrib:"maghrib",Isha:"isha","Jumu'a":"dhuhr"}[j.salat];if(!k||!j.date)return"";const [y,m,d]=j.date.split("-").map(Number);const pf=/^Grande Mosquée d'Évry/.test(j.mosq)?PROFILES.evry:PROFILES.std;return hm(PT(new Date(y,m-1,d),j.lat,j.lon,pf)[k])}
+
+/* ---------- Etat partagé ---------- */
+let db=null,user=null,uid=null,isMod=false;
+const S={janazas:[],going:[],khatma:[],reports:[],decl:[],decisions:[],sug:[],cfg:{}};
+let loaded=false,radius=store.get("radius",15),current=null,view="home";
+
+function visibleJanazas(){
+  const t=todayISO(),y=new Date(Date.now()-864e5).toISOString().slice(0,10);
+  return S.janazas.filter(j=>j.date>=y&&(isMod||reportCount(j.id)<3)).map(j=>({...j,km:km(j.lat,j.lon)})).sort((a,b)=>(a.date+a.salat).localeCompare(b.date+b.salat)||a.km-b.km);
+}
+const goingCount=id=>S.going.filter(g=>g.jid===id).length;
+const amGoing=id=>!!uid&&S.going.some(g=>g.jid===id&&g.uid===uid);
+const reportCount=id=>S.reports.filter(r=>r.jid===id).length;
+function whenLabel(d){const t=todayISO();if(d===t)return"Aujourd'hui";const tm=new Date(Date.now()+864e5);tm.setMinutes(tm.getMinutes()-tm.getTimezoneOffset());if(d===tm.toISOString().slice(0,10))return"Demain";if(d<t)return"Hier";return new Date(d+"T12:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}
+
+let homeMode=store.get("homeMode","near"),follows=store.get("follows",[]);
+const mkey=(name,city)=>name+"|"+city;
+const isFollowed=(name,city)=>follows.includes(mkey(name,city));
+function toggleFollow(name,city){const k=mkey(name,city);follows=follows.includes(k)?follows.filter(x=>x!==k):[...follows,k];store.set("follows",follows);toast(follows.includes(k)?"Tu suis "+name:"Tu ne suis plus "+name)}
+let carTimers=[];
+function obitCard(j){
+  const b=document.createElement("button");b.className="obit";b.type="button";const w=whenLabel(j.date);const st=salatAt(j);const n=goingCount(j.id);
+  b.innerHTML=`<div class="obit-ar">إِنَّا لِلَّٰهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ</div><div class="obit-k">Annonce de décès</div>
+    <h3 class="obit-n">${esc(j.name)}${j.test?'<span class="test">TEST</span>':""}</h3>
+    <div class="obit-s">${j.sex==="f"?"est retournée":"est retourné"} à la miséricorde d'Allah${j.age?" · "+esc(j.age)+" ans":""}</div>
+    <div class="obit-rule"></div>
+    <div class="obit-d"><b>${esc(w)}</b> · prière après ${esc(j.salat)}${st?", vers "+st:""}<br>${esc(j.mosq)} · ${fmtKm(j.km)}</div>
+    ${isFollowed(j.mosq,j.city)?'<div class="followed">★ Mosquée que tu suis</div>':""}
+    <div class="going">${n} personne${n>1?"s":""} y ser${n>1?"ont":"a"}${amGoing(j.id)?" · toi inclus":""}${isMod&&reportCount(j.id)?` · <span style="color:var(--bad)">${reportCount(j.id)} signalement(s)</span>`:""}</div>`;
+  b.onclick=()=>{current=j.id;show("detail")};return b}
+function carousel(items){
+  const wrap=document.createElement("div");wrap.className="car";const tr=document.createElement("div");tr.className="track";
+  items.forEach(j=>tr.appendChild(obitCard(j)));wrap.appendChild(tr);
+  if(items.length>1){
+    const dots=document.createElement("div");dots.className="dots";
+    items.forEach((_,i)=>{const d=document.createElement("button");d.type="button";d.setAttribute("aria-label","Annonce "+(i+1));d.onclick=()=>go(i);dots.appendChild(d)});
+    const cnt=document.createElement("span");dots.appendChild(cnt);wrap.appendChild(dots);
+    let idx=0,paused=false;
+    const mark=()=>{dots.querySelectorAll("button").forEach((d,i)=>d.setAttribute("aria-current",i===idx));cnt.textContent=(idx+1)+" / "+items.length};
+    function go(i){idx=(i+items.length)%items.length;tr.scrollTo({left:tr.clientWidth*idx+12*idx,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});mark()}
+    tr.addEventListener("scroll",()=>{const i=Math.round(tr.scrollLeft/(tr.clientWidth+12));if(i!==idx){idx=i;mark()}},{passive:true});
+    ["pointerdown","touchstart","focusin","mouseenter"].forEach(ev=>tr.addEventListener(ev,()=>paused=true,{passive:true}));
+    tr.addEventListener("mouseleave",()=>paused=false);
+    mark();
+    if(!matchMedia("(prefers-reduced-motion: reduce)").matches)carTimers.push(setInterval(()=>{if(!paused&&document.visibilityState==="visible"&&view==="home")go(idx+1)},6000));
+  }
+  return wrap}
+function renderList(){
+  carTimers.forEach(clearInterval);carTimers=[];
+  $("#radv").textContent=radius+" km";$("#rad").value=radius;$("#radcity").textContent=myCity;
+  const all=(db&&loaded)?visibleJanazas():[];
+  const near=all.filter(j=>j.km<=radius),mine=all.filter(j=>isFollowed(j.mosq,j.city));
+  const modes=[["near","Autour de moi",near.length],["mine","Mes mosquées",mine.length],["all","Toute l'IDF",all.length],...Object.keys(deps).map(k=>[k,k,all.filter(j=>j.dep===k).length])];
+  const H=$("#home-chips");H.innerHTML="";
+  modes.forEach(([k,l,n])=>{const b=document.createElement("button");b.type="button";b.textContent=n?l+" · "+n:l;b.title=deps[k]||"";b.setAttribute("aria-pressed",homeMode===k);b.onclick=()=>{homeMode=k;store.set("homeMode",k);renderList()};H.appendChild(b)});
+  $("#radius-box").hidden=homeMode!=="near";
+  const L=$("#list");
+  if(!db){L.innerHTML='<div class="empty">Les annonces ne sont pas disponibles pour le moment.</div>';return}
+  if(!loaded){L.innerHTML='<div class="empty">Chargement des annonces…</div>';return}
+  L.innerHTML="";
+  const empty=html=>{L.innerHTML=`<div class="empty">${html}</div>`};
+  if(homeMode==="near"){if(!near.length)return empty(`Aucune janaza annoncée dans un rayon de ${radius} km.${all.length>near.length?"<br>"+(all.length-near.length)+" plus loin : élargis la zone ou regarde par département.":""}`);L.appendChild(carousel(near));return}
+  if(homeMode==="mine"){
+    if(!follows.length){L.innerHTML='<div class="empty">Tu ne suis encore aucune mosquée.<br>Suis ta mosquée de quartier, celle de ta famille… tu verras toutes leurs janazas, même loin de chez toi.</div>';const b=document.createElement("button");b.className="btn ghost";b.type="button";b.textContent="Choisir mes mosquées";b.onclick=()=>show("mosq");L.appendChild(b);return}
+    if(!mine.length)return empty(`Aucune janaza annoncée dans tes ${follows.length} mosquée${follows.length>1?"s":""} suivie${follows.length>1?"s":""}.`);
+    L.appendChild(carousel(mine));return}
+  if(homeMode==="all"){
+    let any=false;Object.keys(deps).forEach(k=>{const g=all.filter(j=>j.dep===k);if(!g.length)return;any=true;
+      const h=document.createElement("div");h.className="grp-h";h.innerHTML=`<b>${k} · ${deps[k]}</b><span>${g.length} annonce${g.length>1?"s":""}</span>`;L.appendChild(h);L.appendChild(carousel(g))});
+    if(!any)empty("Aucune janaza annoncée en Île-de-France pour le moment.");return}
+  const g=all.filter(j=>j.dep===homeMode);
+  if(!g.length)return empty(`Aucune janaza annoncée en ${deps[homeMode]} (${homeMode}) pour le moment.`);
+  const h=document.createElement("div");h.className="grp-h";h.innerHTML=`<b>${homeMode} · ${deps[homeMode]}</b><span>${g.length} annonce${g.length>1?"s":""}</span>`;L.appendChild(h);L.appendChild(carousel(g));
+}
+
+function renderDetail(){
+  const j=S.janazas.find(x=>x.id===current);const V=$("#v-detail");
+  if(!j){V.innerHTML='<button class="back" type="button" data-go="home">‹ Retour</button><div class="empty">Cette annonce n\'est plus disponible.</div>';bindBacks(V);return}
+  const taken=S.khatma.filter(k=>k.jid===j.id);const byJuz={};taken.forEach(k=>byJuz[k.juz]=k);
+  const fem=j.sex==="f";
+  V.innerHTML=`<button class="back" type="button" data-go="home">‹ Retour</button>
+    <div class="obit" style="cursor:default"><div class="obit-ar">إِنَّا لِلَّٰهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ</div><div class="obit-k">Annonce de décès vérifiée</div>
+      <h2 class="obit-n">${esc(j.name)}${j.test?'<span class="test">TEST</span>':""}</h2>
+      <div class="obit-s">${fem?"est retournée":"est retourné"} à la miséricorde d'Allah${j.age?" · "+esc(j.age)+" ans":""}</div></div>
+    <button class="fol" type="button" id="dfol" style="align-self:center" aria-pressed="${isFollowed(j.mosq,j.city)}">${isFollowed(j.mosq,j.city)?"★ Tu suis "+esc(j.mosq):"☆ Suivre "+esc(j.mosq)}</button>
+    <div class="card"><h4>Déroulé · ${esc(whenLabel(j.date))}</h4><div class="tl">
+      <div><span>${salatAt(j)||"Prière"}</span><span>Prière funéraire après ${esc(j.salat)}, ${esc(j.mosq)} (${esc(j.city)})</span></div>
+      ${j.cim?`<div><span>Ensuite</span><span>${esc(j.cim)}</span></div>`:""}</div>
+      <div class="btns"><button class="btn" type="button" id="go">${amGoing(j.id)?"Inscrit · se retirer":"J'y serai"}</button></div>
+      <div class="going">${goingCount(j.id)} personne(s) inscrite(s)</div>
+    </div>
+    <div class="card"><h4>Khatma collective pour ${esc(j.name)}</h4>
+      <details class="what"><summary>C'est quoi une khatma ?</summary>
+        <p>Une <b>khatma</b> (ختمة), c'est la lecture du Coran en entier, du début à la fin.</p>
+        <p>Le Coran est divisé en <b>30 parties égales</b> appelées <b>juz</b>. Un juz, c'est une vingtaine de pages, environ 30 à 45 minutes de lecture.</p>
+        <p>Dans une khatma collective, chacun prend un juz. À 30 personnes, le Coran entier est lu en une journée, et chacun invoque Allah pour ${fem?"la défunte":"le défunt"} après sa lecture.</p>
+        <p class="notice">Les savants s'accordent sur le fait que l'invocation (du'a) profite au défunt. Le fait de lui offrir la récompense de la lecture fait l'objet d'avis différents entre les écoles : renseigne-toi auprès de ton imam.</p>
+      </details>
+      <div class="meta"><b style="color:var(--ink)">${taken.length} / 30</b> juz réservés · <b style="color:var(--ok)">${taken.filter(k=>k.done).length}</b> lus</div>
+      <div class="bar"><i style="width:${taken.length/30*100}%"></i></div>
+      <div class="juz" id="jz"></div>
+      <div class="legend"><span><i class="lg free"></i>Libre</span><span><i class="lg tk"></i>Pris</span><span><i class="lg dn"></i>Lu</span><span><i class="lg mn"></i>Le tien</span></div>
+      <div id="myj" class="view" style="gap:8px"></div>
+      <button class="btn ghost" type="button" id="readq">Ouvrir le Coran</button>
+    </div>
+    <div class="card"><h4>Invocation pour ${fem?"la défunte":"le défunt"}</h4>
+      <div class="dua">${fem?"اللَّهُمَّ اغْفِرْ لَهَا وَارْحَمْهَا":"اللَّهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ"}</div>
+      <div class="meta" style="text-align:center">Ô Allah, pardonne-${fem?"lui":"lui"} et fais-lui miséricorde.</div>
+    </div>
+    <button class="btn ghost" type="button" data-go="don">Sadaqa jariya en ${fem?"sa":"son"} nom</button>
+    <button class="link" type="button" id="rep" style="color:var(--muted)">${uid&&S.reports.some(r=>r.jid===j.id&&r.uid===uid)?"Tu as signalé cette annonce":"Signaler une fausse annonce"}</button>`;
+  const J=V.querySelector("#jz");
+  for(let i=1;i<=30;i++){const b=document.createElement("button");b.type="button";b.textContent=i;const k=byJuz[i];
+    if(k&&k.uid===uid){b.className="mine"+(k.done?" done":"");b.setAttribute("aria-label","Juz "+i+", le tien"+(k.done?", lu":""));b.onclick=()=>V.querySelector("#myj").scrollIntoView({block:"center",behavior:"smooth"})}
+    else if(k){b.className="taken"+(k.done?" done":"");b.disabled=true;b.setAttribute("aria-label","Juz "+i+(k.done?", lu":", pris"))}
+    else{b.setAttribute("aria-label","Juz "+i+", libre");b.onclick=()=>toggleJuz(j,i)}
+    J.appendChild(b)}
+  const MJ=V.querySelector("#myj");taken.filter(k=>k.uid===uid).sort((a,b)=>a.juz-b.juz).forEach(k=>{const r=document.createElement("div");r.className="myjuz";
+    r.innerHTML=`<span><b>Juz ${k.juz}</b>${k.done?' <span style="color:var(--ok)">· lu, qu\'Allah l\'accepte</span>':" · à lire"}</span><span class="btns">${k.done?"":'<button class="btn" type="button" data-a="done">J\'ai terminé</button>'}<button class="btn ghost" type="button" data-a="give">Rendre</button></span>`;
+    const d=r.querySelector('[data-a=done]');if(d)d.onclick=()=>markDone(j,k.juz);r.querySelector('[data-a=give]').onclick=()=>toggleJuz(j,k.juz);MJ.appendChild(r)});
+  V.querySelector("#go").onclick=()=>toggleGoing(j);
+  V.querySelector("#dfol").onclick=()=>{toggleFollow(j.mosq,j.city);renderDetail()};
+  V.querySelector("#readq").onclick=()=>{$("#c-for").hidden=false;$("#c-for").textContent="Lecture offerte pour "+j.name+". Qu'Allah l'accepte.";openCoran()};
+  V.querySelector("#rep").onclick=()=>report(j);
+  bindBacks(V);
+}
+
+function needWrite(){if(!db||!uid){toast("Connexion en cours, réessaie dans un instant");return false}return true}
+function writeErr(e){toast(e&&e.code==="permission_denied"?"Action non autorisée":"Échec de l'enregistrement, réessaie")}
+async function toggleGoing(j){if(!needWrite())return;const ref=db.collection("going").doc(j.id+"_"+uid);
+  try{if(amGoing(j.id)){await ref.delete();toast("Inscription retirée")}else{await ref.set({jid:j.id,uid,at:Date.now()});toast("Inscrit. Qu'Allah t'accorde les deux qirats")}}catch(e){writeErr(e)}}
+async function toggleJuz(j,i){if(!needWrite())return;const ref=db.collection("khatma").doc(j.id+"_"+i);
+  const k=S.khatma.find(x=>x.jid===j.id&&x.juz===i);
+  try{if(k&&k.uid===uid){await ref.delete();toast("Juz "+i+" rendu")}else if(!k){const snap=await ref.get();if(snap.exists){toast("Ce juz vient d'être pris");return}await ref.set({jid:j.id,juz:i,uid,name:j.name,at:Date.now()});toast("Juz "+i+" réservé, qu'Allah l'accepte")}}catch(e){writeErr(e)}}
+async function markDone(j,i){if(!needWrite())return;try{await db.collection("khatma").doc(j.id+"_"+i).update({done:true,doneAt:Date.now()});toast("Juz "+i+" terminé. N'oublie pas l'invocation pour "+j.name)}catch(e){writeErr(e)}}
+async function report(j){if(!needWrite())return;if(S.reports.some(r=>r.jid===j.id&&r.uid===uid))return;
+  try{await db.collection("reports").doc(j.id+"_"+uid).set({jid:j.id,uid,at:Date.now()});toast("Merci, un modérateur va revérifier")}catch(e){writeErr(e)}}
+
+/* ---------- Déclaration ---------- */
+const sel=$("#f-mosq");
+function buildSelect(){const keep=sel.value!==""&&M[+sel.value]?M[+sel.value].name+"|"+M[+sel.value].city:null;sel.innerHTML="";
+  Object.keys(deps).forEach(k=>{const g=document.createElement("optgroup");g.label=k+" · "+deps[k];M.filter(m=>m.dep===k).sort((a,b)=>a.city.localeCompare(b.city,"fr")||a.name.localeCompare(b.name,"fr")).forEach(m=>{const o=document.createElement("option");o.value=m.i;o.textContent=m.city+" · "+m.name;g.appendChild(o)});sel.appendChild(g)});
+  if(keep){const m=M.find(x=>x.name+"|"+x.city===keep);if(m)sel.value=m.i}}
+buildSelect();
+function presetMosque(){const h=here();const near=[...M].sort((a,b)=>hav(h,[a.lat,a.lon])-hav(h,[b.lat,b.lon]))[0];sel.value=near.i}
+$("#f-date").value=todayISO();$("#f-date").min=todayISO();
+document.querySelectorAll('input[name=vm]').forEach(r=>r.onchange=()=>{const pf=document.querySelector('input[name=vm]:checked').value==="pf";$("#pf-wrap").hidden=!pf;$("#f-pf").required=pf});
+$("#f").addEventListener("submit",async e=>{e.preventDefault();if(!needWrite())return;
+  const m=M[+sel.value];const vm=document.querySelector('input[name=vm]:checked').value;
+  const d={name:$("#f-name").value.trim(),sex:$("#f-sex").value,age:$("#f-age").value||"",mosq:m.name,city:m.city,dep:m.dep,lat:m.lat,lon:m.lon,date:$("#f-date").value,salat:$("#f-salat").value,cim:$("#f-cim").value.trim(),
+    declarant:$("#f-dn").value.trim(),rel:$("#f-rel").value,tel:$("#f-tel").value.trim(),verif:vm,pf:vm==="pf"?$("#f-pf").value.trim():"",uid,at:Date.now()};
+  const b=$("#f-submit");b.disabled=true;
+  try{await db.collection("declarations").doc(uid).set(d);$("#f").hidden=true;$("#done").hidden=false;$("#main").scrollTop=0}catch(err){writeErr(err)}finally{b.disabled=false}});
+$("#again").onclick=()=>{$("#f").reset();$("#f-date").value=todayISO();presetMosque();$("#pf-wrap").hidden=true;$("#f").hidden=false;$("#done").hidden=true;show("home")};
+
+/* ---------- Modération ---------- */
+const pendingDecl=()=>S.decl.filter(d=>{const x=S.decisions.find(k=>k.id===d.id);return !x||x.at!==d.at}).sort((a,b)=>a.at-b.at);
+const modChecks={};
+function renderMod(){
+  const P=$("#mod-pending");const pend=pendingDecl();
+  P.innerHTML=pend.length?"":'<div class="empty">Aucune annonce en attente.</div>';
+  pend.forEach(d=>{const c=document.createElement("div");c.className="card";
+    c.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h4>${esc(d.name)}</h4><span class="pill p">À vérifier</span></div>
+      <dl class="kv"><dt>Janaza</dt><dd>${esc(whenLabel(d.date))}, après ${esc(d.salat)}</dd><dt>Mosquée</dt><dd>${esc(d.mosq)}</dd>${d.cim?`<dt>Inhumation</dt><dd>${esc(d.cim)}</dd>`:""}
+      <dt>Déclarant</dt><dd>${esc(d.declarant)} (${esc(d.rel)})</dd><dt>Téléphone</dt><dd>${esc(d.tel)}</dd><dt>Confirmer via</dt><dd>${d.verif==="pf"?"Pompes funèbres : "+esc(d.pf):"La mosquée"}</dd></dl>
+      <label class="check"><input type="checkbox" class="c1"${(modChecks[d.id]||{}).c1?" checked":""}> J'ai appelé le déclarant</label>
+      <label class="check"><input type="checkbox" class="c2"${(modChecks[d.id]||{}).c2?" checked":""}> ${d.verif==="pf"?"Les pompes funèbres":"La mosquée"} confirme le décès</label>
+      <div class="btns"><button class="btn" type="button" data-a="ok" disabled>Publier et alerter</button><button class="btn danger" type="button" data-a="no">Refuser</button></div>`;
+    const ok=c.querySelector('[data-a=ok]');const upd=()=>{const a=c.querySelector(".c1").checked,b=c.querySelector(".c2").checked;modChecks[d.id]={c1:a,c2:b};ok.disabled=!(a&&b)};upd();
+    c.querySelectorAll("input").forEach(i=>i.onchange=upd);
+    ok.onclick=async()=>{ok.disabled=true;try{const pub={name:d.name,sex:d.sex,age:d.age,mosq:d.mosq,city:d.city,dep:d.dep,lat:d.lat,lon:d.lon,date:d.date,salat:d.salat,cim:d.cim,at:Date.now(),by:uid};
+      await db.collection("janazas").doc(d.id+"_"+d.at).set(pub);await db.collection("decisions").doc(d.id).set({at:d.at,status:"published"});toast("Publiée. Les fidèles du secteur sont prévenus")}catch(e){writeErr(e);upd()}};
+    c.querySelector('[data-a=no]').onclick=async()=>{try{await db.collection("decisions").doc(d.id).set({at:d.at,status:"refused"});toast("Annonce refusée")}catch(e){writeErr(e)}};
+    P.appendChild(c)});
+  const G=$("#mod-sug");G.innerHTML=S.sug.length?"":'<div class="empty">Aucune proposition.</div>';
+  S.sug.forEach(x=>{const c=document.createElement("div");c.className="card";
+    c.innerHTML=`<h4>${esc(x.name)}${x.tag&&TAGS[x.tag]?`<span class="badge">${TAGS[x.tag]}</span>`:""}</h4><div class="meta">${x.addr?esc(x.addr)+", ":""}${esc(x.city)} (${esc(x.dep)})</div>
+      <div class="btns"><button class="btn" type="button" data-a="add">Ajouter</button><button class="btn danger" type="button" data-a="ign">Ignorer</button></div>`;
+    c.querySelector('[data-a=add]').onclick=async()=>{try{await db.collection("mosques").doc(x.id).set({name:x.name,city:x.city,dep:x.dep,addr:x.addr||"",tag:x.tag||"",at:Date.now()});await db.collection("suggestions").doc(x.id).delete();toast("Mosquée ajoutée")}catch(e){writeErr(e)}};
+    c.querySelector('[data-a=ign]').onclick=async()=>{try{await db.collection("suggestions").doc(x.id).delete()}catch(e){writeErr(e)}};
+    G.appendChild(c)});
+  const U=$("#mod-pub");const pubs=[...S.janazas].sort((a,b)=>b.date.localeCompare(a.date));
+  U.innerHTML=pubs.length?"":'<div class="empty">Aucune annonce publiée.</div>';
+  pubs.forEach(j=>{const n=reportCount(j.id);const c=document.createElement("div");c.className="card";
+    c.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h4>${esc(j.name)} · ${esc(j.city)}</h4><span class="pill ${n>=3?"bad":n?"p":"ok"}">${n?n+" signalement(s)":"En ligne"}</span></div>
+      <div class="meta">${esc(whenLabel(j.date))} · ${goingCount(j.id)} inscrits · ${S.khatma.filter(k=>k.jid===j.id).length}/30 juz</div>
+      <div class="btns">${n?'<button class="btn ghost" type="button" data-a="clear">Annonce confirmée, effacer les signalements</button>':""}<button class="btn danger" type="button" data-a="del">Retirer l'annonce</button></div>`;
+    const cl=c.querySelector('[data-a=clear]');if(cl)cl.onclick=async()=>{try{for(const r of S.reports.filter(r=>r.jid===j.id))await db.collection("reports").doc(r.id).delete();toast("Signalements effacés")}catch(e){writeErr(e)}};
+    c.querySelector('[data-a=del]').onclick=async e=>{if(e.target.dataset.sure!=="1"){e.target.dataset.sure="1";e.target.textContent="Confirmer le retrait";return}try{await db.collection("janazas").doc(j.id).delete();toast("Annonce retirée")}catch(err){writeErr(err)}};
+    U.appendChild(c)});
+}
+function fillCfg(){const c=S.cfg;$("#cfg-link").value=c.link||"";$("#cfg-col").value=c.collected??0;$("#cfg-goal").value=c.goal||600;$("#cfg-part").value=(c.partners||[]).join("\n")}
+$("#cfg").addEventListener("submit",async e=>{e.preventDefault();if(!needWrite())return;
+  const data={link:$("#cfg-link").value.trim(),collected:Math.max(0,+$("#cfg-col").value||0),goal:Math.max(1,+$("#cfg-goal").value||600),partners:$("#cfg-part").value.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,30)};
+  try{await db.doc("config/dons").set(data);toast("Enregistré")}catch(err){writeErr(err)}});
+
+/* ---------- Dons ---------- */
+function renderDon(){const c=S.cfg;const col=c.collected||0,goal=c.goal||600;
+  $("#d-col").textContent=col.toLocaleString("fr-FR")+" €";$("#d-goal").textContent="sur "+goal.toLocaleString("fr-FR")+" €";$("#d-bar").style.width=Math.min(100,col/goal*100)+"%";
+  const p=c.partners||[];$("#d-partners").textContent=p.length?p.join(" · "):"Aucun partenaire pour l'instant.";
+  const g=$("#d-give");const valid=/^https:\/\//.test(c.link||"");
+  if(valid){g.outerHTML=`<a class="btn" id="d-give" href="${esc(c.link)}" target="_blank" rel="noopener" style="text-align:center;text-decoration:none;display:block;border-radius:12px;padding:12px;background:var(--lilac);color:var(--night);font-weight:700">Faire un don</a>`;$("#d-link-note").hidden=true}
+  else{g.onclick=()=>{$("#d-link-note").hidden=false;$("#d-link-note").textContent="La page de don ouvre très bientôt, in shâ Allah."}}}
+$("#d-copy").onclick=async()=>{try{await navigator.clipboard.writeText($("#d-mail").textContent);toast("Adresse copiée")}catch(e){const r=document.createRange();r.selectNodeContents($("#d-mail"));const s=getSelection();s.removeAllRanges();s.addRange(r)}};
+
+/* ---------- Moi ---------- */
+const cs=$("#me-city");cities.forEach(c=>{const o=document.createElement("option");o.value=c.city;o.textContent=c.city+" ("+c.dep+")";cs.appendChild(o)});cs.value=myCity;
+cs.onchange=()=>{myCity=cs.value;store.set("city",myCity);presetMosque();renderList()};
+function renderMe(){
+  $("#me-fol").textContent=follows.length?follows.map(k=>k.split("|")[0]).join(" · "):"Aucune pour l'instant. Tu ne reçois que les annonces autour de toi.";
+  $("#myq").textContent=uid?S.going.filter(g=>g.uid===uid).length*2:0;
+  const mine=S.khatma.filter(k=>k.uid===uid);const by={};mine.forEach(k=>(by[k.name]=by[k.name]||[]).push(k.juz));
+  $("#myjuz").textContent=mine.length?Object.entries(by).map(([n,a])=>"Juz "+a.sort((x,y)=>x-y).join(", ")+" pour "+n).join(" · "):"Aucun juz réservé pour l'instant.";
+  $("#open-mod").hidden=!isMod;
+  if(isMod){const n=pendingDecl().length+S.sug.length;$("#open-mod").textContent="Modération"+(n?" · "+n+" à traiter":"")}
+}
+$("#me-fol-add").onclick=()=>{mqDep="fol";document.querySelectorAll("#mq-chips button").forEach(x=>x.setAttribute("aria-pressed",x.textContent==="★ Suivies"));if(!follows.length){mqDep="all";document.querySelectorAll("#mq-chips button").forEach((x,i)=>x.setAttribute("aria-pressed",i===0))}show("mosq")};
+$("#open-mod").onclick=()=>{fillCfg();show("mod")};
+
+/* ---------- Mosquées vue ---------- */
+let mqDep="all";
+function renderMq(){const s=$("#mq-s").value.trim().toLowerCase();
+  const items=M.filter(m=>(mqDep==="all"||m.dep===mqDep||(mqDep==="fol"&&isFollowed(m.name,m.city))||(mqDep==="tr"&&m.tag==="tr")||(mqDep==="ku"&&m.tag==="ku"))&&(!s||(m.name+" "+m.city+" "+m.addr).toLowerCase().includes(s))).map(m=>({...m,km:km(m.lat,m.lon)})).sort((a,b)=>a.km-b.km);
+  $("#mq-count").textContent=items.length+" mosquée"+(items.length>1?"s":"")+" · distances depuis "+myCity;
+  $("#mq-list").innerHTML=items.length?items.map(m=>`<div class="mq"><span class="d">${m.dep}</span><span class="t"><strong>${esc(m.name)}${m.tag&&TAGS[m.tag]?`<span class="badge">${TAGS[m.tag]}</span>`:""}</strong><small>${m.addr?esc(m.addr)+", ":""}${esc(m.city)}</small></span><span class="k">${fmtKm(m.km)}</span><button type="button" class="fol" data-n="${esc(m.name)}" data-c="${esc(m.city)}" aria-pressed="${isFollowed(m.name,m.city)}">${isFollowed(m.name,m.city)?"★ Suivie":"☆ Suivre"}</button></div>`).join(""):'<div class="empty">Aucune mosquée trouvée.</div>';
+  $("#mq-list").querySelectorAll(".fol").forEach(b=>b.onclick=()=>{toggleFollow(b.dataset.n,b.dataset.c);const on=isFollowed(b.dataset.n,b.dataset.c);b.setAttribute("aria-pressed",on);b.textContent=on?"★ Suivie":"☆ Suivre"})}
+(function(){const C=$("#mq-chips");[["all","Toute l'IDF"],["fol","★ Suivies"],...Object.keys(deps).map(k=>[k,k]),["tr","Turques"],["ku","Kurdes"]].forEach(([k,l])=>{const b=document.createElement("button");b.type="button";b.textContent=l;b.title=deps[k]||"";b.setAttribute("aria-pressed",k==="all");b.onclick=()=>{mqDep=k;C.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderMq()};C.appendChild(b)});$("#mq-s").addEventListener("input",renderMq)})();
+$("#open-mq").onclick=$("#open-mq2").onclick=()=>show("mosq");
+(function(){const sc=$("#sg-city");Object.keys(C).sort((a,b)=>a.localeCompare(b,"fr")).forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;sc.appendChild(o)})})();
+const depOf=city=>(M.find(m=>m.city===city)||{}).dep||"";
+$("#sg").addEventListener("submit",async e=>{e.preventDefault();if(!needWrite())return;const city=$("#sg-city").value;
+  try{await db.collection("suggestions").add({name:$("#sg-name").value.trim(),city,dep:depOf(city),addr:$("#sg-addr").value.trim(),tag:$("#sg-tag").value,uid,at:Date.now()});$("#sg").reset();toast("Merci, un modérateur va l'ajouter")}catch(err){writeErr(err)}});
+
+/* ---------- Coran ---------- */
+const surahs=[
+ {n:1,ar:"الفاتحة",fr:"Al-Fâtiha · L'Ouverture",rev:"Mecquoise",bas:false,ayat:[
+  ["بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ","Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux."],
+  ["ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ","Louange à Allah, Seigneur des mondes."],
+  ["ٱلرَّحْمَٰنِ ٱلرَّحِيمِ","Le Tout Miséricordieux, le Très Miséricordieux."],
+  ["مَٰلِكِ يَوْمِ ٱلدِّينِ","Maître du Jour de la Rétribution."],
+  ["إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ","C'est Toi seul que nous adorons, et Toi seul dont nous implorons le secours."],
+  ["ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ","Guide-nous sur le droit chemin,"],
+  ["صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ","le chemin de ceux que Tu as comblés de bienfaits, non de ceux qui ont encouru Ta colère, ni des égarés."]]},
+ {n:36,ar:"يس",fr:"Yâ-Sîn",rev:"Mecquoise · 83 versets",soon:true},
+ {n:67,ar:"الملك",fr:"Al-Mulk · La Royauté",rev:"Mecquoise · 30 versets",soon:true},
+ {n:112,ar:"الإخلاص",fr:"Al-Ikhlâs · Le Monothéisme pur",rev:"Mecquoise",bas:true,ayat:[
+  ["قُلْ هُوَ ٱللَّهُ أَحَدٌ","Dis : Il est Allah, l'Unique."],
+  ["ٱللَّهُ ٱلصَّمَدُ","Allah, l'Absolu, vers qui tout se tourne."],
+  ["لَمْ يَلِدْ وَلَمْ يُولَدْ","Il n'a pas engendré et n'a pas été engendré."],
+  ["وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ","Et nul n'est égal à Lui."]]},
+ {n:113,ar:"الفلق",fr:"Al-Falaq · L'Aube naissante",rev:"Mecquoise",bas:true,ayat:[
+  ["قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ","Dis : Je cherche protection auprès du Seigneur de l'aube naissante,"],
+  ["مِن شَرِّ مَا خَلَقَ","contre le mal de ce qu'Il a créé,"],
+  ["وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ","contre le mal de l'obscurité quand elle s'étend,"],
+  ["وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ","contre le mal de celles qui soufflent sur les nœuds,"],
+  ["وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ","et contre le mal de l'envieux quand il envie."]]},
+ {n:114,ar:"الناس",fr:"An-Nâs · Les Hommes",rev:"Mecquoise",bas:true,ayat:[
+  ["قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ","Dis : Je cherche protection auprès du Seigneur des hommes,"],
+  ["مَلِكِ ٱلنَّاسِ","le Roi des hommes,"],
+  ["إِلَٰهِ ٱلنَّاسِ","le Dieu des hommes,"],
+  ["مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ","contre le mal du tentateur qui se dérobe,"],
+  ["ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ","qui souffle le mal dans les poitrines des hommes,"],
+  ["مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ","qu'il soit des djinns ou des hommes."]]}
+];
+let arsz=1.6;
+(function(){const S2=$("#surahs");surahs.forEach(s=>{const b=document.createElement("button");b.type="button";b.className="surah";
+  b.innerHTML=`<span class="n"><span>${s.n}</span></span><span class="t"><strong>${s.fr}</strong><small>${s.soon?s.rev+" · bientôt":s.rev+" · "+s.ayat.length+" versets"}</small></span><span class="a">${s.ar}</span>`;
+  if(s.soon)b.disabled=true;else b.onclick=()=>openSurah(s);S2.appendChild(b)})})();
+function openSurah(s){$("#s-ar").textContent="سورة "+s.ar;$("#s-fr").textContent=s.fr;$("#s-meta").textContent="Sourate "+s.n+" · "+s.rev;$("#s-bas").hidden=!s.bas;
+  $("#ayat").innerHTML=s.ayat.map((a,i)=>`<div class="ayah"><div class="ar">${a[0]} ﴿${(i+1).toLocaleString("ar-EG")}﴾</div><div class="fr">${a[1]}</div><div class="num">${s.n}:${i+1}</div></div>`).join("");
+  $("#c-list").hidden=true;$("#c-read").hidden=false;$("#main").scrollTop=0}
+document.querySelectorAll(".modes button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".modes button").forEach(x=>x.setAttribute("aria-pressed",x===b));const r=$("#c-read");r.classList.toggle("hide-fr",b.dataset.m==="ar");r.classList.toggle("hide-ar",b.dataset.m==="fr")});
+$("#sz-").onclick=()=>{arsz=Math.max(1.2,arsz-.2);$("#ayat").style.setProperty("--arsz",arsz+"rem")};
+$("#szp").onclick=()=>{arsz=Math.min(2.6,arsz+.2);$("#ayat").style.setProperty("--arsz",arsz+"rem")};
+$("#c-back").onclick=()=>{$("#c-read").hidden=true;$("#c-list").hidden=false};
+function openCoran(){$("#c-read").hidden=true;$("#c-list").hidden=false;show("coran")}
+
+/* ---------- Rappels : algorithme ---------- */
+const THEMES={mort:"La mort et l'au-delà",janaza:"La janaza",coran:"Le Coran",patience:"Patience et épreuves",parents:"Les parents",sadaqa:"L'aumône",priere:"Prière et dhikr",caractere:"Le bon caractère",repentir:"Le repentir",jumua:"Le vendredi"};
+const R=[
+ {id:1,t:["mort"],fr:"Multipliez le rappel de ce qui met fin aux plaisirs : la mort.",src:"Hadith rapporté par at-Tirmidhi et Ibn Mâjah"},
+ {id:2,t:["mort"],fr:"Sois dans ce bas monde comme un étranger ou un voyageur de passage.",src:"Hadith rapporté par al-Bukhari"},
+ {id:3,t:["mort"],ar:"كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",fr:"Toute âme goûtera la mort.",src:"Sourate Al-Imran, verset 185"},
+ {id:4,t:["janaza"],fr:"Celui qui assiste à la prière funéraire obtient un qirat, et celui qui reste jusqu'à l'enterrement en obtient deux, chacun comme une immense montagne.",src:"Hadith rapporté par al-Bukhari et Muslim"},
+ {id:5,t:["janaza"],fr:"Parmi les droits du musulman sur son frère : rendre visite au malade et suivre son convoi funèbre.",src:"Hadith rapporté par al-Bukhari et Muslim"},
+ {id:6,t:["janaza"],fr:"Hâtez-vous avec la janaza : si le défunt était pieux, c'est vers un bien que vous le conduisez.",src:"Hadith rapporté par al-Bukhari et Muslim"},
+ {id:7,t:["sadaqa","mort"],fr:"Quand l'homme meurt, ses œuvres s'arrêtent sauf trois : une aumône continue, une science utile, ou un enfant vertueux qui invoque pour lui.",src:"Hadith rapporté par Muslim"},
+ {id:8,t:["coran"],fr:"Le meilleur d'entre vous est celui qui apprend le Coran et l'enseigne.",src:"Hadith rapporté par al-Bukhari"},
+ {id:9,t:["coran"],fr:"Lisez le Coran, car il viendra le Jour de la Résurrection intercéder pour ceux qui l'ont lu.",src:"Hadith rapporté par Muslim"},
+ {id:10,t:["coran"],fr:"Chaque lettre lue du Livre d'Allah vaut une bonne action, et la bonne action est multipliée par dix.",src:"Hadith rapporté par at-Tirmidhi"},
+ {id:11,t:["patience"],ar:"فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",fr:"À côté de la difficulté, il y a certes une facilité.",src:"Sourate Ash-Sharh, verset 5"},
+ {id:12,t:["patience"],fr:"Étonnante est l'affaire du croyant : tout est un bien pour lui. S'il lui arrive un bonheur, il remercie, et s'il lui arrive un malheur, il patiente.",src:"Hadith rapporté par Muslim"},
+ {id:13,t:["patience","mort"],ar:"إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ",fr:"Nous appartenons à Allah et c'est vers Lui que nous retournerons.",src:"Sourate Al-Baqara, verset 156"},
+ {id:14,t:["parents"],fr:"On demanda au Prophète qui méritait le plus sa bonne compagnie. Il répondit : ta mère, puis ta mère, puis ta mère, puis ton père.",src:"Hadith rapporté par al-Bukhari et Muslim"},
+ {id:15,t:["parents"],fr:"La satisfaction du Seigneur se trouve dans la satisfaction du père, et Sa colère dans la colère du père.",src:"Hadith rapporté par at-Tirmidhi"},
+ {id:16,t:["sadaqa"],fr:"L'aumône ne diminue jamais les biens.",src:"Hadith rapporté par Muslim"},
+ {id:17,t:["sadaqa"],fr:"Protégez-vous du Feu, ne serait-ce qu'avec la moitié d'une datte.",src:"Hadith rapporté par al-Bukhari et Muslim"},
+ {id:18,t:["priere"],fr:"La première chose sur laquelle le serviteur sera jugé le Jour de la Résurrection, c'est la prière.",src:"Hadith rapporté par at-Tirmidhi et an-Nasâ'î"},
+ {id:19,t:["priere"],ar:"فَاذْكُرُونِي أَذْكُرْكُمْ",fr:"Souvenez-vous de Moi, Je Me souviendrai de vous.",src:"Sourate Al-Baqara, verset 152"},
+ {id:20,t:["caractere"],fr:"Les croyants les plus complets dans leur foi sont ceux qui ont le meilleur caractère.",src:"Hadith rapporté par Abu Dawud et at-Tirmidhi"},
+ {id:21,t:["caractere"],fr:"Que celui qui croit en Allah et au Jour dernier dise du bien ou se taise.",src:"Hadith rapporté par al-Bukhari et Muslim"},
+ {id:22,t:["repentir"],ar:"لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",fr:"Ne désespérez pas de la miséricorde d'Allah.",src:"Sourate Az-Zumar, verset 53"},
+ {id:23,t:["repentir"],fr:"Tous les fils d'Adam commettent des fautes, et les meilleurs de ceux qui fautent sont ceux qui se repentent.",src:"Hadith rapporté par at-Tirmidhi et Ibn Mâjah"},
+ {id:24,t:["jumua","coran"],fr:"Celui qui lit la sourate Al-Kahf le vendredi sera éclairé d'une lumière jusqu'au vendredi suivant.",src:"Hadith rapporté par al-Hâkim et al-Bayhaqî"},
+ {id:25,t:["jumua"],fr:"Multipliez les prières sur moi le jour du vendredi.",src:"Hadith rapporté par Abu Dawud"}
+];
+let rPrefs=store.get("themes",["janaza","coran","mort"]),rLikes=store.get("likes",[]),rSeen=store.get("seen",{});
+function seededRand(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return((h>>>0)%1000)/1000}
+function scoreR(r){
+  const reasons=[];let s=1;
+  const pref=r.t.filter(t=>rPrefs.includes(t));if(pref.length){s+=3;reasons.push("Tu suis le thème « "+THEMES[pref[0]]+" »")}
+  const likedThemes={};R.filter(x=>rLikes.includes(x.id)).forEach(x=>x.t.forEach(t=>likedThemes[t]=(likedThemes[t]||0)+1));
+  const lk=r.t.reduce((a,t)=>a+(likedThemes[t]||0),0);if(lk){s+=Math.min(3,lk*.8);if(!reasons.length)reasons.push("Proche des rappels que tu aimes")}
+  const day=new Date().getDay();
+  if(day===5&&r.t.includes("jumua")){s+=5;reasons.unshift("C'est vendredi")}
+  if(day===4&&r.t.includes("jumua")){s+=1.5;reasons.push("Demain c'est vendredi")}
+  const soon=uid&&S.going.some(g=>g.uid===uid&&(S.janazas.find(j=>j.id===g.jid)||{}).date>=todayISO());
+  if(soon&&r.t.some(t=>t==="janaza"||t==="mort")){s+=4;reasons.unshift("Tu vas assister à une janaza")}
+  const h=new Date().getHours();if(h<9&&r.t.includes("priere")){s+=1;reasons.push("Pour bien commencer la journée")}
+  if(rLikes.includes(r.id))s-=1.5;
+  const seen=rSeen[r.id];if(seen){const days=(Date.now()-seen)/864e5;if(days<3)s-=4-days}
+  s+=seededRand(todayISO()+r.id)*2;
+  return{r,s,why:reasons[0]||"Pour varier tes rappels"};
+}
+function rappelHTML(x,hero){const r=x.r;const liked=rLikes.includes(r.id);
+  return `<div class="rappel${hero?" hero":""}"><span class="why">${esc(x.why)}</span>${r.ar?`<div class="ar">${r.ar}</div>`:""}<p>${esc(r.fr)}</p>
+    <div class="foot"><small>${esc(r.src)}</small><button type="button" class="heart" data-like="${r.id}" aria-pressed="${liked}">${liked?"♥ Aimé":"♡ J'aime"}</button></div></div>`}
+function renderRappels(){
+  const ranked=R.map(scoreR).sort((a,b)=>b.s-a.s);
+  $("#r-hero").innerHTML=rappelHTML(ranked[0],true);
+  $("#r-feed").innerHTML=ranked.slice(1,6).map(x=>rappelHTML(x,false)).join("");
+  $("#r-hero").dataset.id=ranked[0].r.id;
+  document.querySelectorAll("[data-like]").forEach(b=>b.onclick=()=>{const id=+b.dataset.like;rLikes=rLikes.includes(id)?rLikes.filter(x=>x!==id):[...rLikes,id];store.set("likes",rLikes);b.setAttribute("aria-pressed",rLikes.includes(id));b.textContent=rLikes.includes(id)?"♥ Aimé":"♡ J'aime"});
+  const T=$("#r-themes");T.innerHTML="";Object.entries(THEMES).forEach(([k,l])=>{const b=document.createElement("button");b.type="button";b.textContent=l;b.setAttribute("aria-pressed",rPrefs.includes(k));
+    b.onclick=()=>{rPrefs=rPrefs.includes(k)?rPrefs.filter(x=>x!==k):[...rPrefs,k];store.set("themes",rPrefs);renderRappels()};T.appendChild(b)});
+}
+$("#r-next").onclick=()=>{rSeen[$("#r-hero").dataset.id]=Date.now();store.set("seen",rSeen);renderRappels();$("#main").scrollTop=0};
+
+/* ---------- Vue horaires ---------- */
+let prDay=0;
+function renderPrieres(){const d=new Date();d.setDate(d.getDate()+prDay);const t=ptFor(d);const now=new Date();const nx=nextPrayer();
+  $("#pr-city").textContent=prof==="evry"?"Grande Mosquée d'Évry":myCity;$("#pr-prof").value=prof;$("#pr-date").textContent=prDay===0?"Aujourd'hui":d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+  $("#pr-list").innerHTML=Object.keys(PNAMES).map(k=>{const on=prDay===0&&nx.k===k&&nx.at.toDateString()===d.toDateString();const past=prDay===0&&t[k]<now&&!on;
+    return `<div class="${on?"on":past?"past":""}"><span>${k==="dhuhr"&&d.getDay()===5?"Jumu'a / Dhuhr":PNAMES[k][0]}</span><span class="ar">${PNAMES[k][1]}</span><time>${hm(t[k])}</time></div>`}).join("");
+  $("#pr-jumua").hidden=d.getDay()!==5}
+$("#pr-prof").onchange=e=>{prof=e.target.value;store.set("prof",prof);renderPrieres();tickNext()};
+$("#pr-prev").onclick=()=>{prDay--;renderPrieres()};$("#pr-next").onclick=()=>{prDay++;renderPrieres()};
+function tickNext(){const nx=nextPrayer();const mins=Math.max(0,Math.round((nx.at-new Date())/60000));
+  $("#np-city").textContent=prof==="evry"?"Mosquée d'Évry":myCity;$("#np-name").textContent=PNAMES[nx.k][0]+" à "+hm(nx.at);$("#np-time").textContent=mins>=60?"dans "+Math.floor(mins/60)+" h "+String(mins%60).padStart(2,"0"):"dans "+mins+" min"}
+setInterval(()=>{tickNext();if(view==="prieres")renderPrieres()},30000);
+$("#next-pr").onclick=$("#open-pr").onclick=()=>{prDay=0;show("prieres")};
+
+/* ---------- Présentation ---------- */
+const TOUR=[
+ ["قيراط","Bienvenue sur QIRAT","Le Prophète ﷺ a promis un qirat, grand comme une montagne, à celui qui assiste à la prière funéraire, et deux à celui qui reste jusqu'à l'enterrement. QIRAT t'aide à ne plus en manquer."],
+ ["الجنازة","Les janazas près de toi","Choisis ta ville, ton rayon et les mosquées que tu suis. Les annonces s'affichent par département et défilent toutes seules. Touche « J'y serai » pour t'inscrire."],
+ ["ختمة","La khatma collective","Pour chaque défunt, le Coran est partagé en 30 juz. Chacun en prend un, le lit, puis invoque Allah pour le défunt. Ensemble, on termine le Coran en une journée."],
+ ["أمانة","Des annonces vérifiées","Une famille déclare un décès, un modérateur l'appelle et vérifie auprès de la mosquée ou des pompes funèbres. Rien n'est publié avant. Tu retrouves aussi le Coran, les horaires de prière et des rappels choisis pour toi."]];
+let tourI=0;
+function showTour(i){tourI=i;const t=TOUR[i];$("#tour-ar").textContent=t[0];$("#tour-h").textContent=t[1];$("#tour-p").textContent=t[2];
+  $("#tour-dots").innerHTML=TOUR.map((_,k)=>`<i class="${k===i?"on":""}"></i>`).join("");$("#tour-next").textContent=i===TOUR.length-1?"Commencer":"Suivant";$("#tour").hidden=false;$("#tour-next").focus()}
+function endTour(){$("#tour").hidden=true;store.set("tourDone",true)}
+$("#tour-next").onclick=()=>tourI<TOUR.length-1?showTour(tourI+1):endTour();
+$("#tour-skip").onclick=endTour;$("#open-tour").onclick=()=>showTour(0);
+if(!store.get("tourDone",false))setTimeout(()=>showTour(0),400);
+
+/* ---------- Navigation ---------- */
+function show(v){view=v;
+  document.querySelectorAll("main > .view").forEach(s=>s.hidden=s.id!=="v-"+v);
+  const tab={detail:"home",mosq:"home",prieres:"home",mod:"me"}[v]||v;
+  document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===tab));
+  render();$("#main").scrollTop=0}
+function render(){
+  tickNext();
+  if(view==="home")renderList();else if(view==="prieres")renderPrieres();else if(view==="detail")renderDetail();else if(view==="mosq")renderMq();
+  else if(view==="rappels")renderRappels();else if(view==="don")renderDon();else if(view==="me")renderMe();else if(view==="mod")renderMod();
+}
+function bindBacks(root){root.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go))}
+bindBacks(document);
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{if(b.dataset.v==="coran")openCoran();else show(b.dataset.v)});
+$("#rad").addEventListener("input",e=>{radius=+e.target.value;store.set("radius",radius);renderList()});
+presetMosque();render();
+
+/* ---------- Base de données Supabase ---------- */
+let sbClient=null;
+function makeDb(sb){
+  const norm=e=>({code:(e&&(e.code==="42501"||/row-level security|permission/i.test(e.message||"")))?"permission_denied":"error",message:e&&e.message});
+  const row=r=>({id:r.id,exists:true,data:()=>r.data||{},metadata:{fromCache:false,hasPendingWrites:false}});
+  const chan=(name,filter,cb)=>sb.channel(name+"-"+Math.random().toString(36).slice(2)).on("postgres_changes",Object.assign({event:"*",schema:"public",table:name},filter?{filter}:{}),cb).subscribe();
+  function docRef(t,id){const ref={id,path:t+"/"+id,
+    async get(){const {data,error}=await sb.from(t).select("id,data").eq("id",id).maybeSingle();if(error)throw norm(error);return data?row(data):{id,exists:false,data:()=>undefined,metadata:{fromCache:false}}},
+    async set(d){const {error}=await sb.from(t).upsert({id,data:d});if(error)throw norm(error)},
+    async update(d){const cur=await ref.get();if(!cur.exists)throw{code:"invalid_argument"};const {error}=await sb.from(t).update({data:Object.assign({},cur.data(),d),updated_at:new Date().toISOString()}).eq("id",id);if(error)throw norm(error)},
+    async delete(){const {error}=await sb.from(t).delete().eq("id",id);if(error)throw norm(error)},
+    onSnapshot(next,err){let alive=true;const load=async()=>{try{const s=await ref.get();if(alive)next(s)}catch(e){if(alive&&err)err(e)}};load();
+      const ch=chan(t,"id=eq."+id,load);const poll=setInterval(load,60000);return()=>{alive=false;clearInterval(poll);sb.removeChannel(ch)}}};
+    return ref}
+  function collection(t){return{path:t,
+    doc:id=>docRef(t,id||crypto.randomUUID()),
+    async add(d){const r=docRef(t,crypto.randomUUID());await r.set(d);return r},
+    onSnapshot(next,err){let alive=true,tm;
+      const load=async()=>{const {data,error}=await sb.from(t).select("id,data").order("id").limit(1000);if(!alive)return;if(error){if(err)err(norm(error));return}next({docs:data.map(row),size:data.length,empty:!data.length,metadata:{fromCache:false,hasPendingWrites:false}})};
+      load();const ch=chan(t,null,()=>{clearTimeout(tm);tm=setTimeout(load,250)});const poll=setInterval(load,45000);
+      document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")load()});
+      return()=>{alive=false;clearInterval(poll);sb.removeChannel(ch)}}}}
+  return{collection,doc:p=>{const [t,id]=p.split("/");return docRef(t,id)}}}
+
+/* ---------- Connexion ---------- */
+(async function(){
+  const off=$("#offline");
+  const CFG=window.QIRAT_CONFIG||{};
+  const fail=msg=>{off.hidden=false;off.textContent=msg;loaded=true;render()};
+  if(!window.supabase||!CFG.url||!CFG.key||/XXXX/.test(CFG.url))return fail("L'appli n'est pas encore reliée à sa base de données : remplis le fichier config.js (guide, étape 2).");
+  sbClient=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  let session=null;
+  try{session=(await sbClient.auth.getSession()).data.session;
+    if(!session){const r=await sbClient.auth.signInAnonymously();if(r.error)throw r.error;session=r.data.session}}
+  catch(e){return fail("Connexion impossible. Vérifie que la connexion anonyme est activée dans Supabase (guide, étape 2).")}
+  uid=session.user.id;myEmail=session.user.email||"";
+  try{const {data}=await sbClient.from("admins").select("user_id").eq("user_id",uid).maybeSingle();isMod=!!data}catch(e){isMod=false}
+  db=makeDb(sbClient);
+  const timer=setTimeout(()=>{if(!loaded){off.hidden=false;off.textContent="Les annonces mettent du temps à arriver. Vérifie ta connexion."}},10000);
+  const sub=(name,key,after)=>db.collection(name).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));if(after)after(s);render()},()=>{if(name==="janazas"){clearTimeout(timer);fail("Impossible de charger les annonces pour l'instant.")}});
+  sub("janazas","janazas",()=>{loaded=true;clearTimeout(timer);off.hidden=true});
+  db.collection("mosques").onSnapshot(s=>{EXTRA=s.docs.map(d=>({id:d.id,...d.data()}));buildM();buildSelect();render()},()=>{});
+  sub("suggestions","sug");sub("going","going");sub("khatma","khatma");sub("reports","reports");
+  db.doc("config/dons").onSnapshot(s=>{S.cfg=s.exists?s.data():{};render()},()=>{});
+  if(isMod){sub("declarations","decl");sub("decisions","decisions")}
+  renderLogin();render();
+})();
+
+/* ---------- Espace modérateur ---------- */
+let myEmail="";
+function renderLogin(){const st=$("#ml-state");if(!st)return;
+  if(myEmail){st.textContent="Connecté avec "+myEmail+(isMod?" · modérateur":" · pas encore modérateur (ajoute ton e-mail dans Supabase, guide étape 4)");$("#ml-form").hidden=true;$("#ml-out").hidden=false}
+  else{st.textContent="Réservé à l'équipe QIRAT. Tu reçois un lien de connexion par e-mail.";$("#ml-form").hidden=false;$("#ml-out").hidden=true}}
+$("#ml-form").addEventListener("submit",async e=>{e.preventDefault();if(!sbClient)return toast("Base de données non reliée");
+  const email=$("#ml-email").value.trim();const {error}=await sbClient.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
+  toast(error?"Envoi impossible : "+error.message:"Lien envoyé. Ouvre ton e-mail sur ce téléphone.")});
+$("#ml-out").onclick=async()=>{await sbClient.auth.signOut();location.reload()};
+</script>
+<script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+</body>
+</html>
