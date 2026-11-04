@@ -142,6 +142,13 @@ button.btn[disabled]{opacity:.55;cursor:default}
 .prose{font-size:.85rem;line-height:1.65;display:flex;flex-direction:column;gap:10px}
 .prose h4{margin:6px 0 0;color:var(--gold);font-family:var(--f-disp);font-weight:400;font-size:1.05rem}
 .prose p{margin:0}
+.modes.two-col{grid-template-columns:1fr 1fr}
+.shead{text-align:center;margin-top:18px;padding:12px;border:1px solid var(--gold);border-radius:10px;display:flex;flex-direction:column;gap:2px}
+.shead .a{font-family:var(--f-ar);color:var(--gold);font-size:1.4rem}
+.shead small{color:var(--muted)}
+.arow{display:flex;justify-content:space-between;align-items:center}
+.aplay{background:none;border:1px solid var(--line);color:var(--lilac);border-radius:99px;width:32px;height:32px;cursor:pointer;font-size:.75rem}
+.ayah.playing{background:linear-gradient(90deg,rgba(216,180,106,.12),transparent);border-radius:10px;padding-inline:8px}
 .badge{font-size:.62rem;color:var(--gold);border:1px solid currentColor;border-radius:99px;padding:1px 6px;margin-left:6px;vertical-align:middle;font-weight:600}
 .link{background:none;border:0;color:var(--lilac);font:inherit;font-size:.82rem;cursor:pointer;text-align:left;padding:0;text-decoration:underline;text-underline-offset:3px}
 .dname{font-family:var(--f-disp);font-size:1.6rem;margin:0}
@@ -397,21 +404,26 @@ nav button[aria-current="true"]{color:var(--gold)}
       <section class="view" id="v-coran" hidden>
         <div id="c-list" class="view">
           <div class="sec">Le Saint Coran</div>
-          <div class="meta">Texte arabe et traduction française, verset par verset.</div>
-          <div class="surahs" id="surahs"></div>
+          <button class="next" type="button" id="c-resume" hidden><span><small>Reprendre la lecture</small><strong id="c-resume-t"></strong></span><span class="cd">›</span></button>
+          <div class="modes two-col" role="group" aria-label="Parcourir par" id="c-by"><button type="button" data-b="s" aria-pressed="true">114 sourates</button><button type="button" data-b="j" aria-pressed="false">30 juz</button></div>
+          <input id="c-q" type="search" placeholder="Rechercher : nom ou numéro de sourate" aria-label="Rechercher une sourate">
+          <div class="surahs" id="surahs"><div class="empty">Chargement des sourates…</div></div>
+          <p class="notice">Texte arabe : Tanzil (rasm uthmani). Traduction française : Muhammad Hamidullah. Récitation : Mishary Alafasy. Données fournies par AlQuran Cloud. Une connexion est nécessaire la première fois, ensuite les sourates lues restent disponibles hors ligne.</p>
         </div>
         <div id="c-read" class="view" hidden>
           <button class="back" type="button" id="c-back">‹ Sourates</button>
-          <div class="modes" role="group" aria-label="Langue d'affichage">
+          <div class="modes" id="c-modes" role="group" aria-label="Langue d'affichage">
             <button type="button" data-m="both" aria-pressed="true">Les deux</button>
             <button type="button" data-m="ar" aria-pressed="false">العربية</button>
             <button type="button" data-m="fr" aria-pressed="false">Français</button>
           </div>
           <div class="sz">Taille du texte arabe<span style="display:flex;gap:6px"><button type="button" id="sz-" aria-label="Réduire">A−</button><button type="button" id="szp" aria-label="Agrandir">A+</button></span></div>
           <div class="stitle"><div class="a" id="s-ar"></div><strong id="s-fr"></strong><small id="s-meta"></small></div>
+          <div class="meta" id="c-for" hidden style="text-align:center;color:var(--gold)"></div>
+          <button class="btn" type="button" id="c-play">▶ Écouter</button>
           <div class="basmala" id="s-bas">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
           <div id="ayat"></div>
-          <div class="meta" id="c-for" hidden></div>
+          <div class="btns"><button class="btn ghost" type="button" id="c-prev">‹ Précédente</button><button class="btn ghost" type="button" id="c-next">Suivante ›</button></div>
         </div>
       </section>
 
@@ -978,11 +990,11 @@ function renderDetail(){
     else{b.setAttribute("aria-label","Juz "+i+", libre");b.onclick=()=>toggleJuz(j,i)}
     J.appendChild(b)}
   const MJ=V.querySelector("#myj");taken.filter(k=>k.uid===uid).sort((a,b)=>a.juz-b.juz).forEach(k=>{const r=document.createElement("div");r.className="myjuz";
-    r.innerHTML=`<span><b>Juz ${k.juz}</b>${k.done?' <span style="color:var(--ok)">· lu, qu\'Allah l\'accepte</span>':" · à lire"}</span><span class="btns">${k.done?"":'<button class="btn" type="button" data-a="done">J\'ai terminé</button>'}<button class="btn ghost" type="button" data-a="give">Rendre</button></span>`;
-    const d=r.querySelector('[data-a=done]');if(d)d.onclick=()=>markDone(j,k.juz);r.querySelector('[data-a=give]').onclick=()=>toggleJuz(j,k.juz);MJ.appendChild(r)});
+    r.innerHTML=`<span><b>Juz ${k.juz}</b>${k.done?' <span style="color:var(--ok)">· lu, qu\'Allah l\'accepte</span>':" · à lire"}</span><span class="btns">${k.done?"":'<button class="btn" type="button" data-a="done">J\'ai terminé</button>'}<button class="btn ghost" type="button" data-a="read">Lire</button><button class="btn ghost" type="button" data-a="give">Rendre</button></span>`;
+    const d=r.querySelector('[data-a=done]');if(d)d.onclick=()=>markDone(j,k.juz);r.querySelector('[data-a=give]').onclick=()=>toggleJuz(j,k.juz);r.querySelector('[data-a=read]').onclick=()=>{show("coran");openJuz(k.juz).then(()=>{$("#c-for").hidden=false;$("#c-for").textContent="Juz "+k.juz+" pour "+j.name+". Après ta lecture, invoque Allah pour "+(j.sex==="f"?"elle":"lui")+"."})};MJ.appendChild(r)});
   V.querySelector("#go").onclick=()=>toggleGoing(j);
   V.querySelector("#dfol").onclick=()=>{toggleFollow(j.mosq,j.city);renderDetail()};
-  V.querySelector("#readq").onclick=()=>{$("#c-for").hidden=false;$("#c-for").textContent="Lecture offerte pour "+j.name+". Qu'Allah l'accepte.";openCoran()};
+  V.querySelector("#readq").onclick=()=>openCoran();
   V.querySelector("#rep").onclick=()=>report(j);
   bindBacks(V);
 }
@@ -1135,49 +1147,64 @@ const depOf=city=>(M.find(m=>m.city===city)||{}).dep||"";
 $("#sg").addEventListener("submit",async e=>{e.preventDefault();if(!needWrite())return;const city=$("#sg-city").value;
   try{await db.collection("suggestions").add({name:$("#sg-name").value.trim(),city,dep:depOf(city),addr:$("#sg-addr").value.trim(),tag:$("#sg-tag").value,uid,at:Date.now()});$("#sg").reset();toast("Merci, un modérateur va l'ajouter")}catch(err){writeErr(err)}});
 
-/* ---------- Coran ---------- */
-const surahs=[
- {n:1,ar:"الفاتحة",fr:"Al-Fâtiha · L'Ouverture",rev:"Mecquoise",bas:false,ayat:[
-  ["بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ","Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux."],
-  ["ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ","Louange à Allah, Seigneur des mondes."],
-  ["ٱلرَّحْمَٰنِ ٱلرَّحِيمِ","Le Tout Miséricordieux, le Très Miséricordieux."],
-  ["مَٰلِكِ يَوْمِ ٱلدِّينِ","Maître du Jour de la Rétribution."],
-  ["إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ","C'est Toi seul que nous adorons, et Toi seul dont nous implorons le secours."],
-  ["ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ","Guide-nous sur le droit chemin,"],
-  ["صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ","le chemin de ceux que Tu as comblés de bienfaits, non de ceux qui ont encouru Ta colère, ni des égarés."]]},
- {n:36,ar:"يس",fr:"Yâ-Sîn",rev:"Mecquoise · 83 versets",soon:true},
- {n:67,ar:"الملك",fr:"Al-Mulk · La Royauté",rev:"Mecquoise · 30 versets",soon:true},
- {n:112,ar:"الإخلاص",fr:"Al-Ikhlâs · Le Monothéisme pur",rev:"Mecquoise",bas:true,ayat:[
-  ["قُلْ هُوَ ٱللَّهُ أَحَدٌ","Dis : Il est Allah, l'Unique."],
-  ["ٱللَّهُ ٱلصَّمَدُ","Allah, l'Absolu, vers qui tout se tourne."],
-  ["لَمْ يَلِدْ وَلَمْ يُولَدْ","Il n'a pas engendré et n'a pas été engendré."],
-  ["وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ","Et nul n'est égal à Lui."]]},
- {n:113,ar:"الفلق",fr:"Al-Falaq · L'Aube naissante",rev:"Mecquoise",bas:true,ayat:[
-  ["قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ","Dis : Je cherche protection auprès du Seigneur de l'aube naissante,"],
-  ["مِن شَرِّ مَا خَلَقَ","contre le mal de ce qu'Il a créé,"],
-  ["وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ","contre le mal de l'obscurité quand elle s'étend,"],
-  ["وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ","contre le mal de celles qui soufflent sur les nœuds,"],
-  ["وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ","et contre le mal de l'envieux quand il envie."]]},
- {n:114,ar:"الناس",fr:"An-Nâs · Les Hommes",rev:"Mecquoise",bas:true,ayat:[
-  ["قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ","Dis : Je cherche protection auprès du Seigneur des hommes,"],
-  ["مَلِكِ ٱلنَّاسِ","le Roi des hommes,"],
-  ["إِلَٰهِ ٱلنَّاسِ","le Dieu des hommes,"],
-  ["مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ","contre le mal du tentateur qui se dérobe,"],
-  ["ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ","qui souffle le mal dans les poitrines des hommes,"],
-  ["مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ","qu'il soit des djinns ou des hommes."]]}
-];
-let arsz=1.6;
-(function(){const S2=$("#surahs");surahs.forEach(s=>{const b=document.createElement("button");b.type="button";b.className="surah";
-  b.innerHTML=`<span class="n"><span>${s.n}</span></span><span class="t"><strong>${s.fr}</strong><small>${s.soon?s.rev+" · bientôt":s.rev+" · "+s.ayat.length+" versets"}</small></span><span class="a">${s.ar}</span>`;
-  if(s.soon)b.disabled=true;else b.onclick=()=>openSurah(s);S2.appendChild(b)})})();
-function openSurah(s){$("#s-ar").textContent="سورة "+s.ar;$("#s-fr").textContent=s.fr;$("#s-meta").textContent="Sourate "+s.n+" · "+s.rev;$("#s-bas").hidden=!s.bas;
-  $("#ayat").innerHTML=s.ayat.map((a,i)=>`<div class="ayah"><div class="ar">${a[0]} ﴿${(i+1).toLocaleString("ar-EG")}﴾</div><div class="fr">${a[1]}</div><div class="num">${s.n}:${i+1}</div></div>`).join("");
-  $("#c-list").hidden=true;$("#c-read").hidden=false;$("#main").scrollTop=0}
-document.querySelectorAll(".modes button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".modes button").forEach(x=>x.setAttribute("aria-pressed",x===b));const r=$("#c-read");r.classList.toggle("hide-fr",b.dataset.m==="ar");r.classList.toggle("hide-ar",b.dataset.m==="fr")});
-$("#sz-").onclick=()=>{arsz=Math.max(1.2,arsz-.2);$("#ayat").style.setProperty("--arsz",arsz+"rem")};
-$("#szp").onclick=()=>{arsz=Math.min(2.6,arsz+.2);$("#ayat").style.setProperty("--arsz",arsz+"rem")};
-$("#c-back").onclick=()=>{$("#c-read").hidden=true;$("#c-list").hidden=false};
-function openCoran(){$("#c-read").hidden=true;$("#c-list").hidden=false;show("coran")}
+/* ---------- Coran complet (114 sourates, via AlQuran Cloud) ---------- */
+const QAPI="https://api.alquran.cloud/v1";
+const REV={Meccan:"Mecquoise",Medinan:"Médinoise"};
+const arNum=n=>Number(n).toLocaleString("ar-EG");
+let SUR=store.get("surahIndex",null),cBy="s",cur=null,arsz=store.get("arsz",1.6),audio=null,playIdx=-1,curAyahs=[];
+async function qget(path){const r=await fetch(QAPI+path);const j=await r.json();if(j.code!==200)throw new Error(j.status||"erreur");return j.data}
+async function loadIndex(){if(SUR)return SUR;SUR=(await qget("/surah")).map(x=>({n:x.number,ar:x.name,tr:x.englishName,v:x.numberOfAyahs,rev:REV[x.revelationType]||x.revelationType}));store.set("surahIndex",SUR);return SUR}
+function renderResume(){const l=store.get("lastRead",null);const b=$("#c-resume");if(!l){b.hidden=true;return}b.hidden=false;$("#c-resume-t").textContent=l.label;b.onclick=()=>l.type==="j"?openJuz(l.n,l.i):openSurah(l.n,l.i)}
+async function renderSurahList(){
+  const L=$("#surahs");renderResume();$("#c-q").hidden=cBy==="j";
+  if(cBy==="j"){L.innerHTML="";for(let i=1;i<=30;i++){const b=document.createElement("button");b.type="button";b.className="surah";
+      b.innerHTML=`<span class="n"><span>${i}</span></span><span class="t"><strong>Juz ${i}</strong><small>Partie ${i} sur 30 · environ 20 pages</small></span><span class="a">الجزء ${arNum(i)}</span>`;b.onclick=()=>openJuz(i);L.appendChild(b)}return}
+  try{await loadIndex()}catch(err){L.innerHTML='<div class="empty">Impossible de charger les sourates. Vérifie ta connexion et réessaie.</div>';return}
+  const q=$("#c-q").value.trim().toLowerCase().replace(/[-'’ ]/g,"");
+  const items=SUR.filter(x=>!q||String(x.n)===q||x.tr.toLowerCase().replace(/[-'’ ]/g,"").includes(q)||x.ar.includes(q));
+  L.innerHTML=items.map(x=>`<button type="button" class="surah" data-n="${x.n}"><span class="n"><span>${x.n}</span></span><span class="t"><strong>${esc(x.tr)}</strong><small>${x.rev} · ${x.v} versets</small></span><span class="a">${esc(x.ar.replace(/^سُورَةُ\s*/,""))}</span></button>`).join("")||'<div class="empty">Aucune sourate trouvée.</div>';
+  L.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{$("#c-for").hidden=true;openSurah(+b.dataset.n)});
+}
+function stripBas(t,sn,k){if(k!==1||sn===1||sn===9)return t;const w=t.split(" ");return /^بِ?سْمِ|^بسم/.test(w[0])?w.slice(4).join(" "):t}
+function showReader(){$("#c-list").hidden=true;$("#c-read").hidden=false;$("#main").scrollTop=0}
+function setMeta(title,sub,meta){$("#s-ar").textContent=title;$("#s-fr").textContent=sub;$("#s-meta").textContent=meta}
+async function openSurah(n,at){stopAudio();cur={type:"s",n};showReader();setMeta("","","");$("#s-bas").hidden=true;$("#ayat").innerHTML='<div class="empty">Chargement de la sourate…</div>';
+  $("#c-prev").hidden=n<=1;$("#c-next").hidden=n>=114;
+  try{const [A,F,Au]=await qget(`/surah/${n}/editions/quran-uthmani,fr.hamidullah,ar.alafasy`);
+    setMeta(A.name,A.englishName,`Sourate ${n} · ${REV[A.revelationType]||""} · ${A.numberOfAyahs} versets`);$("#s-bas").hidden=(n===1||n===9);
+    curAyahs=A.ayahs.map((x,i)=>({s:n,k:x.numberInSurah,ar:stripBas(x.text,n,x.numberInSurah),fr:F.ayahs[i].text,au:Au.ayahs[i].audio}));
+    renderAyahs();store.set("lastRead",{type:"s",n,label:"Sourate "+n+" · "+A.englishName});if(at)document.getElementById("ay-"+at)?.scrollIntoView({block:"center"})}
+  catch(err){$("#ayat").innerHTML='<div class="empty">Impossible de charger cette sourate. Vérifie ta connexion et réessaie.</div>'}}
+async function openJuz(n,at){stopAudio();cur={type:"j",n};showReader();setMeta("الجزء "+arNum(n),"Juz "+n,"Partie "+n+" sur 30");$("#s-bas").hidden=true;$("#ayat").innerHTML='<div class="empty">Chargement du juz…</div>';
+  $("#c-prev").hidden=n<=1;$("#c-next").hidden=n>=30;
+  try{const [A,F,Au]=await Promise.all(["quran-uthmani","fr.hamidullah","ar.alafasy"].map(ed=>qget(`/juz/${n}/${ed}`)));
+    curAyahs=A.ayahs.map((x,i)=>({s:x.surah.number,k:x.numberInSurah,sname:x.surah.name,str:x.surah.englishName,ar:stripBas(x.text,x.surah.number,x.numberInSurah),fr:F.ayahs[i].text,au:Au.ayahs[i].audio}));
+    renderAyahs();store.set("lastRead",{type:"j",n,label:"Juz "+n});if(at)document.getElementById("ay-"+at)?.scrollIntoView({block:"center"})}
+  catch(err){$("#ayat").innerHTML='<div class="empty">Impossible de charger ce juz. Vérifie ta connexion et réessaie.</div>'}}
+function renderAyahs(){const out=[];
+  curAyahs.forEach((a,i)=>{
+    if(cur.type==="j"&&(a.k===1||i===0)){out.push(`<div class="shead"><div class="a">${esc(a.sname)}</div><small>${esc(a.str)} · sourate ${a.s}</small></div>`);if(a.k===1&&a.s!==1&&a.s!==9)out.push('<div class="basmala">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>')}
+    out.push(`<div class="ayah" id="ay-${i}"><div class="ar">${esc(a.ar)} ﴿${arNum(a.k)}﴾</div><div class="fr">${esc(a.fr)}</div><div class="arow"><span class="num">${a.s}:${a.k}</span><button type="button" class="aplay" data-i="${i}" aria-label="Écouter le verset ${a.s}:${a.k}">▶</button></div></div>`)});
+  const A=$("#ayat");A.innerHTML=out.join("");A.style.setProperty("--arsz",arsz+"rem");
+  A.querySelectorAll(".aplay").forEach(b=>b.onclick=()=>playFrom(+b.dataset.i,false));$("#c-play").textContent="▶ Écouter";
+}
+function markPlaying(){document.querySelectorAll(".ayah.playing").forEach(x=>x.classList.remove("playing"));if(playIdx>=0)document.getElementById("ay-"+playIdx)?.classList.add("playing")}
+function stopAudio(){if(audio){audio.onended=null;audio.pause();audio=null}playIdx=-1;markPlaying();const b=$("#c-play");if(b)b.textContent="▶ Écouter"}
+function playFrom(i,cont){if(audio){audio.onended=null;audio.pause()}const a=curAyahs[i];if(!a)return stopAudio();playIdx=i;audio=new Audio(a.au);
+  audio.play().catch(()=>{toast("Lecture audio impossible pour le moment");stopAudio()});markPlaying();$("#c-play").textContent="❚❚ Pause";
+  audio.onended=()=>{if(cont&&playIdx+1<curAyahs.length)playFrom(playIdx+1,true);else stopAudio()};
+  document.getElementById("ay-"+i)?.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  if(cur)store.set("lastRead",{...store.get("lastRead",{}),i})}
+$("#c-play").onclick=()=>{if(audio&&!audio.paused){audio.pause();$("#c-play").textContent="▶ Reprendre"}else if(audio){audio.play();$("#c-play").textContent="❚❚ Pause"}else playFrom(0,true)};
+document.querySelectorAll("#c-modes button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#c-modes button").forEach(x=>x.setAttribute("aria-pressed",x===b));const r=$("#c-read");r.classList.toggle("hide-fr",b.dataset.m==="ar");r.classList.toggle("hide-ar",b.dataset.m==="fr")});
+document.querySelectorAll("#c-by button").forEach(b=>b.onclick=()=>{cBy=b.dataset.b;document.querySelectorAll("#c-by button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderSurahList()});
+$("#c-q").addEventListener("input",renderSurahList);
+$("#sz-").onclick=()=>{arsz=Math.max(1.2,arsz-.2);store.set("arsz",arsz);$("#ayat").style.setProperty("--arsz",arsz+"rem")};
+$("#szp").onclick=()=>{arsz=Math.min(2.8,arsz+.2);store.set("arsz",arsz);$("#ayat").style.setProperty("--arsz",arsz+"rem")};
+$("#c-prev").onclick=()=>cur&&(cur.type==="s"?openSurah(cur.n-1):openJuz(cur.n-1));
+$("#c-next").onclick=()=>cur&&(cur.type==="s"?openSurah(cur.n+1):openJuz(cur.n+1));
+$("#c-back").onclick=()=>{stopAudio();$("#c-read").hidden=true;$("#c-list").hidden=false;$("#c-for").hidden=true;renderSurahList()};
+function openCoran(){stopAudio();$("#c-read").hidden=true;$("#c-list").hidden=false;show("coran");renderSurahList()}
 
 /* ---------- Rappels : algorithme ---------- */
 const THEMES={mort:"La mort et l'au-delà",janaza:"La janaza",coran:"Le Coran",patience:"Patience et épreuves",parents:"Les parents",sadaqa:"L'aumône",priere:"Prière et dhikr",caractere:"Le bon caractère",repentir:"Le repentir",jumua:"Le vendredi"};
@@ -1269,7 +1296,7 @@ $("#tour-skip").onclick=endTour;$("#open-tour").onclick=()=>showTour(0);
 if(!store.get("tourDone",false))setTimeout(()=>showTour(0),400);
 
 /* ---------- Navigation ---------- */
-function show(v){view=v;
+function show(v){if(v!=="coran"&&typeof stopAudio==="function")stopAudio();view=v;
   document.querySelectorAll("main > .view").forEach(s=>s.hidden=s.id!=="v-"+v);
   const tab={detail:"home",mosq:"home",prieres:"home",mod:"me",privacy:"me"}[v]||v;
   document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===tab));
