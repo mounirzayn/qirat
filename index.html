@@ -149,6 +149,14 @@ button.btn[disabled]{opacity:.55;cursor:default}
 .arow{display:flex;justify-content:space-between;align-items:center}
 .aplay{background:none;border:1px solid var(--line);color:var(--lilac);border-radius:99px;width:32px;height:32px;cursor:pointer;font-size:.75rem}
 .ayah.playing{background:linear-gradient(90deg,rgba(216,180,106,.12),transparent);border-radius:10px;padding-inline:8px}
+.hd{border-bottom:1px solid var(--line);padding-block:14px;display:flex;flex-direction:column;gap:8px}
+.hd .ar{font-family:var(--f-ar);direction:rtl;text-align:right;line-height:2;font-size:1.2rem}
+.hd .fr{font-size:.88rem;line-height:1.65}
+.hd .hn{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:.7rem;color:var(--gold)}
+.grade{font-size:.66rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.grade.sahih{color:var(--ok);border-color:var(--ok)}
+.grade.daif{color:var(--warn);border-color:var(--warn)}
+#h-read.hide-ar .hd .ar,#h-read.hide-fr .hd .fr{display:none}
 .badge{font-size:.62rem;color:var(--gold);border:1px solid currentColor;border-radius:99px;padding:1px 6px;margin-left:6px;vertical-align:middle;font-weight:600}
 .link{background:none;border:0;color:var(--lilac);font:inherit;font-size:.82rem;cursor:pointer;text-align:left;padding:0;text-decoration:underline;text-underline-offset:3px}
 .dname{font-family:var(--f-disp);font-size:1.6rem;margin:0}
@@ -403,6 +411,7 @@ nav button[aria-current="true"]{color:var(--gold)}
       <!-- CORAN -->
       <section class="view" id="v-coran" hidden>
         <div id="c-list" class="view">
+          <div class="modes two-col lib" role="group" aria-label="Bibliothèque"><button type="button" data-l="coran" aria-pressed="true">Coran</button><button type="button" data-l="hadith" aria-pressed="false">Hadiths</button></div>
           <div class="sec">Le Saint Coran</div>
           <button class="next" type="button" id="c-resume" hidden><span><small>Reprendre la lecture</small><strong id="c-resume-t"></strong></span><span class="cd">›</span></button>
           <div class="modes two-col" role="group" aria-label="Parcourir par" id="c-by"><button type="button" data-b="s" aria-pressed="true">114 sourates</button><button type="button" data-b="j" aria-pressed="false">30 juz</button></div>
@@ -424,6 +433,35 @@ nav button[aria-current="true"]{color:var(--gold)}
           <div class="basmala" id="s-bas">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
           <div id="ayat"></div>
           <div class="btns"><button class="btn ghost" type="button" id="c-prev">‹ Précédente</button><button class="btn ghost" type="button" id="c-next">Suivante ›</button></div>
+        </div>
+      </section>
+
+      <!-- HADITHS -->
+      <section class="view" id="v-hadith" hidden>
+        <div id="h-cols" class="view">
+          <div class="modes two-col lib" role="group" aria-label="Bibliothèque"><button type="button" data-l="coran" aria-pressed="false">Coran</button><button type="button" data-l="hadith" aria-pressed="true">Hadiths</button></div>
+          <div class="sec">Les recueils de hadiths</div>
+          <div class="surahs" id="h-feat"></div>
+          <div class="surahs" id="h-list"></div>
+          <p class="notice">Texte arabe et traduction française issus du projet ouvert hadith-api. La traduction française n'est pas une traduction officielle : en cas de doute, le texte arabe fait foi, et renseigne-toi auprès d'un imam.</p>
+        </div>
+        <div id="h-books" class="view" hidden>
+          <button class="back" type="button" id="h-back1">‹ Recueils</button>
+          <div class="stitle"><strong id="h-bt"></strong><small id="h-bs"></small></div>
+          <input id="h-bq" type="search" placeholder="Rechercher un livre" aria-label="Rechercher un livre">
+          <div class="surahs" id="h-blist"></div>
+        </div>
+        <div id="h-read" class="view" hidden>
+          <button class="back" type="button" id="h-back2">‹ Livres</button>
+          <div class="stitle"><strong id="h-rt"></strong><small id="h-rs"></small></div>
+          <div class="modes" id="h-modes" role="group" aria-label="Langue d'affichage">
+            <button type="button" data-m="both" aria-pressed="true">Les deux</button>
+            <button type="button" data-m="ar" aria-pressed="false">العربية</button>
+            <button type="button" data-m="fr" aria-pressed="false">Français</button>
+          </div>
+          <input id="h-q" type="search" placeholder="Rechercher un mot dans ce livre" aria-label="Rechercher dans ce livre">
+          <div id="h-items"></div>
+          <button class="btn ghost" type="button" id="h-more" hidden>Afficher plus</button>
         </div>
       </section>
 
@@ -570,7 +608,7 @@ nav button[aria-current="true"]{color:var(--gold)}
     <nav>
       <button type="button" data-v="home" aria-current="true"><svg viewBox="0 0 24 24"><path d="M12 3c-3 3-6 5.5-6 10a6 6 0 0012 0c0-4.5-3-7-6-10z"/></svg>Janazas</button>
       <button type="button" data-v="declare"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Déclarer</button>
-      <button type="button" data-v="coran"><svg viewBox="0 0 24 24"><path d="M12 6c-2-1.5-5-2-8-1.5V19c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V4.5C17 4 14 4.5 12 6z"/><path d="M12 6v14.5"/></svg>Coran</button>
+      <button type="button" data-v="coran"><svg viewBox="0 0 24 24"><path d="M12 6c-2-1.5-5-2-8-1.5V19c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V4.5C17 4 14 4.5 12 6z"/><path d="M12 6v14.5"/></svg>Lecture</button>
       <button type="button" data-v="rappels"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 014 4v12H9a4 4 0 01-4-4z"/><path d="M9 9h6M9 13h4"/></svg>Rappels</button>
       <button type="button" data-v="don"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg>Don</button>
       <button type="button" data-v="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Moi</button>
@@ -1204,6 +1242,48 @@ $("#szp").onclick=()=>{arsz=Math.min(2.8,arsz+.2);store.set("arsz",arsz);$("#aya
 $("#c-prev").onclick=()=>cur&&(cur.type==="s"?openSurah(cur.n-1):openJuz(cur.n-1));
 $("#c-next").onclick=()=>cur&&(cur.type==="s"?openSurah(cur.n+1):openJuz(cur.n+1));
 $("#c-back").onclick=()=>{stopAudio();$("#c-read").hidden=true;$("#c-list").hidden=false;$("#c-for").hidden=true;renderSurahList()};
+/* ---------- Hadiths (hadith-api) ---------- */
+const HAPI="https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1";
+const HCOL=[["nawawi","Les 40 hadiths d'an-Nawawi","Les fondements de la religion"],["qudsi","40 hadiths qudsi","Paroles d'Allah rapportées par le Prophète ﷺ"],["bukhari","Sahih al-Bukhari","Le recueil le plus authentique"],["muslim","Sahih Muslim","Deuxième recueil authentique"],["abudawud","Sunan Abu Dawud",""],["nasai","Sunan an-Nasa'i",""],["ibnmajah","Sunan Ibn Majah",""],["malik","Al-Muwatta de l'imam Malik",""],["dehlawi","40 hadiths de Shah Waliullah Dehlawi",""]];
+let HINFO=null,hCol=null,hSec=null,hItems=[],hShown=0;
+async function hjson(path){const r=await fetch(HAPI+path);if(!r.ok)throw new Error(r.status);return r.json()}
+async function hinfo(){if(HINFO)return HINFO;HINFO=await hjson("/info.json");return HINFO}
+const secsOf=c=>Object.entries(HINFO[c].metadata.sections).filter(([k,v])=>k!=="0"&&v).map(([k,v])=>({n:+k,name:v,d:HINFO[c].metadata.section_details?.[k]||HINFO[c].metadata.section_detail?.[k]}));
+function hView(which){["h-cols","h-books","h-read"].forEach(id=>$("#"+id).hidden=id!==which);$("#main").scrollTop=0}
+async function openHadiths(){show("hadith");hView("h-cols");const L=$("#h-list"),F=$("#h-feat");L.innerHTML='<div class="empty">Chargement des recueils…</div>';F.innerHTML="";
+  try{await hinfo()}catch(e){L.innerHTML='<div class="empty">Impossible de charger les recueils. Vérifie ta connexion et réessaie.</div>';return}
+  const feats=[];["bukhari","muslim"].forEach(c=>secsOf(c).filter(x=>/funeral|jana/i.test(x.name)).forEach(x=>feats.push([c,x])));
+  F.innerHTML=feats.map(([c,x])=>`<button type="button" class="surah" data-c="${c}" data-s="${x.n}"><span class="n"><span>★</span></span><span class="t"><strong>Les funérailles (janaza)</strong><small>${HCOL.find(h=>h[0]===c)[1]} · livre ${x.n}</small></span><span class="a">الجنائز</span></button>`).join("");
+  F.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{hCol=b.dataset.c;openHSection(+b.dataset.s)});
+  L.innerHTML=HCOL.filter(([c])=>HINFO[c]).map(([c,fr,sub],i)=>`<button type="button" class="surah" data-c="${c}"><span class="n"><span>${i+1}</span></span><span class="t"><strong>${fr}</strong><small>${sub?sub+" · ":""}${secsOf(c).length} livre${secsOf(c).length>1?"s":""}</small></span><span class="a"></span></button>`).join("");
+  L.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>openHBook(b.dataset.c))}
+function openHBook(c){hCol=c;const secs=secsOf(c);hView(secs.length===1?"h-read":"h-books");if(secs.length===1)return openHSection(secs[0].n);
+  $("#h-bt").textContent=HCOL.find(h=>h[0]===c)[1];$("#h-bs").textContent=secs.length+" livres";$("#h-bq").value="";renderHBooks()}
+function renderHBooks(){const q=$("#h-bq").value.trim().toLowerCase();const secs=secsOf(hCol).filter(x=>!q||x.name.toLowerCase().includes(q)||String(x.n)===q);
+  $("#h-blist").innerHTML=secs.map(x=>`<button type="button" class="surah" data-s="${x.n}"><span class="n"><span>${x.n}</span></span><span class="t"><strong>${esc(x.name)}</strong><small>${x.d?"Hadiths "+x.d.hadithnumber_first+" à "+x.d.hadithnumber_last:""}</small></span><span class="a"></span></button>`).join("")||'<div class="empty">Aucun livre trouvé.</div>';
+  $("#h-blist").querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>openHSection(+b.dataset.s))}
+function gradeHTML(g){if(!g||!g.length)return"";const x=g[0];const k=/sahih/i.test(x.grade)?"sahih":/da.?if|weak|munkar|mawdu/i.test(x.grade)?"daif":"";return `<span class="grade ${k}">${esc(x.grade)} · ${esc(x.name)}</span>`}
+async function openHSection(n){hSec=n;hView("h-read");const col=HCOL.find(h=>h[0]===hCol);const sec=secsOf(hCol).find(x=>x.n===n);
+  $("#h-rt").textContent=sec?sec.name:"";$("#h-rs").textContent=col[1]+(secsOf(hCol).length>1?" · livre "+n:"");$("#h-q").value="";
+  $("#h-items").innerHTML='<div class="empty">Chargement des hadiths…</div>';$("#h-more").hidden=true;
+  try{const [F,A]=await Promise.all([hjson(`/editions/fra-${hCol}/sections/${n}.json`),hjson(`/editions/ara-${hCol}/sections/${n}.json`)]);
+    const am={};A.hadiths.forEach(h=>am[h.hadithnumber]=h.text);
+    hItems=F.hadiths.filter(h=>h.text||am[h.hadithnumber]).map(h=>({n:h.hadithnumber,fr:h.text||"",ar:am[h.hadithnumber]||"",g:h.grades}));
+    hShown=0;renderHItems(true)}
+  catch(e){$("#h-items").innerHTML='<div class="empty">Impossible de charger ce livre. Vérifie ta connexion et réessaie.</div>'}}
+function renderHItems(reset){const q=$("#h-q").value.trim().toLowerCase();const list=q?hItems.filter(h=>h.fr.toLowerCase().includes(q)||h.ar.includes(q)):hItems;
+  if(reset)hShown=0;const next=list.slice(hShown,hShown+25);
+  const html=next.map(h=>`<div class="hd"><div class="hn"><span>${HCOL.find(c=>c[0]===hCol)[1]} · n° ${h.n}</span>${gradeHTML(h.g)}</div>${h.ar?`<div class="ar">${esc(h.ar)}</div>`:""}${h.fr?`<div class="fr">${esc(h.fr)}</div>`:""}</div>`).join("");
+  if(reset)$("#h-items").innerHTML=html||'<div class="empty">Aucun hadith trouvé.</div>';else $("#h-items").insertAdjacentHTML("beforeend",html);
+  hShown+=next.length;$("#h-more").hidden=hShown>=list.length;$("#h-more").textContent="Afficher plus ("+(list.length-hShown)+" restants)"}
+$("#h-more").onclick=()=>renderHItems(false);
+let hqT;$("#h-q").addEventListener("input",()=>{clearTimeout(hqT);hqT=setTimeout(()=>renderHItems(true),250)});
+$("#h-bq").addEventListener("input",renderHBooks);
+$("#h-back1").onclick=()=>openHadiths();
+$("#h-back2").onclick=()=>secsOf(hCol).length>1?(hView("h-books"),renderHBooks()):openHadiths();
+document.querySelectorAll("#h-modes button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#h-modes button").forEach(x=>x.setAttribute("aria-pressed",x===b));const r=$("#h-read");r.classList.toggle("hide-fr",b.dataset.m==="ar");r.classList.toggle("hide-ar",b.dataset.m==="fr")});
+document.querySelectorAll(".lib button").forEach(b=>b.onclick=()=>b.dataset.l==="hadith"?openHadiths():openCoran());
+
 function openCoran(){stopAudio();$("#c-read").hidden=true;$("#c-list").hidden=false;show("coran");renderSurahList()}
 
 /* ---------- Rappels : algorithme ---------- */
@@ -1298,7 +1378,7 @@ if(!store.get("tourDone",false))setTimeout(()=>showTour(0),400);
 /* ---------- Navigation ---------- */
 function show(v){if(v!=="coran"&&typeof stopAudio==="function")stopAudio();view=v;
   document.querySelectorAll("main > .view").forEach(s=>s.hidden=s.id!=="v-"+v);
-  const tab={detail:"home",mosq:"home",prieres:"home",mod:"me",privacy:"me"}[v]||v;
+  const tab={detail:"home",mosq:"home",prieres:"home",mod:"me",privacy:"me",hadith:"coran"}[v]||v;
   document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===tab));
   render();$("#main").scrollTop=0}
 function render(){
