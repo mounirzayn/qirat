@@ -51,6 +51,8 @@ Pour mettre à jour l'appli plus tard : dans Netlify, onglet **Deploys**, glisse
 
 ## Étape 4 : devenir modérateur (toi et ton associé)
 
+Raccourci : ajoute directement les e-mails dans Supabase avec `insert into public.admin_emails (email) values ('adresse@exemple.fr');` puis connecte-toi dans l'appli (points 1 à 3 ci-dessous). Le point 5 devient inutile.
+
 1. Ouvre ton adresse Netlify sur ton téléphone.
 2. Onglet **Moi**, puis **Espace modérateur** : entre ton e-mail et touche **Recevoir le lien de connexion**.
 3. Ouvre l'e-mail **sur le même téléphone** et touche le lien. Tu reviens dans l'appli, connecté.

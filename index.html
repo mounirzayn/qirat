@@ -1321,7 +1321,7 @@ function makeDb(sb){
     if(!session){const r=await sbClient.auth.signInAnonymously();if(r.error)throw r.error;session=r.data.session}}
   catch(e){return fail("Connexion impossible. Vérifie que la connexion anonyme est activée dans Supabase (guide, étape 2).")}
   uid=session.user.id;myEmail=session.user.email||"";
-  try{const {data}=await sbClient.from("admins").select("user_id").eq("user_id",uid).maybeSingle();isMod=!!data}catch(e){isMod=false}
+  try{const {data,error}=await sbClient.rpc("is_admin");isMod=!error&&data===true}catch(e){isMod=false}
   db=makeDb(sbClient);
   const timer=setTimeout(()=>{if(!loaded){off.hidden=false;off.textContent="Les annonces mettent du temps à arriver. Vérifie ta connexion."}},10000);
   const sub=(name,key,after)=>db.collection(name).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));if(after)after(s);render()},()=>{if(name==="janazas"){clearTimeout(timer);fail("Impossible de charger les annonces pour l'instant.")}});
@@ -1336,7 +1336,7 @@ function makeDb(sb){
 /* ---------- Espace modérateur ---------- */
 let myEmail="";
 function renderLogin(){const st=$("#ml-state");if(!st)return;
-  if(myEmail){st.textContent="Connecté avec "+myEmail+(isMod?" · modérateur":" · pas encore modérateur (ajoute ton e-mail dans Supabase, guide étape 4)");$("#ml-form").hidden=true;$("#ml-out").hidden=false}
+  if(myEmail){st.textContent="Connecté avec "+myEmail+(isMod?" · modérateur":" · pas encore modérateur : demande à l'équipe QIRAT d'ajouter ton e-mail");$("#ml-form").hidden=true;$("#ml-out").hidden=false}
   else{st.textContent="Réservé à l'équipe QIRAT. Tu reçois un lien de connexion par e-mail.";$("#ml-form").hidden=false;$("#ml-out").hidden=true}}
 $("#ml-form").addEventListener("submit",async e=>{e.preventDefault();if(!sbClient)return toast("Base de données non reliée");
   const email=$("#ml-email").value.trim();const {error}=await sbClient.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});

@@ -72,3 +72,18 @@ select cron.unschedule(jobid) from cron.job where jobname = 'qirat-purge';
 select cron.schedule('qirat-purge', '15 3 * * *', 'select public.qirat_purge()');
 
 select jobname, schedule from cron.job where jobname = 'qirat-purge';
+
+-- 3. Modérateurs enregistrés à l'avance par e-mail --------------------------
+-- Ajouter un modérateur : insert into public.admin_emails (email) values ('adresse@exemple.fr');
+create table if not exists public.admin_emails (email text primary key);
+alter table public.admin_emails enable row level security;
+revoke all on public.admin_emails from anon, authenticated;
+
+create or replace function public.is_admin() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.admins where user_id = auth.uid())
+      or exists (select 1 from public.admin_emails
+                  where email = lower(coalesce(auth.jwt()->>'email',''))
+                    and coalesce(auth.jwt()->>'email','') <> '')
+$$;
+grant execute on function public.is_admin() to anon, authenticated;
