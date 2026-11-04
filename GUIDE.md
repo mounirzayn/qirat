@@ -19,7 +19,7 @@ Tu obtiendras une vraie adresse (par exemple `qirat-test.netlify.app`) que n'imp
 ## Étape 2 : installer la base et relier l'appli
 
 1. Dans Supabase, ouvre **SQL Editor**, puis **New query**.
-2. Ouvre le fichier `supabase.sql` de ce dossier, copie **tout** son contenu, colle-le, puis clique sur **Run**. Le message doit indiquer un succès.
+2. Ouvre le fichier `supabase.sql` de ce dossier, copie **tout** son contenu, colle-le, puis clique sur **Run**. Fais ensuite de même avec `supabase-v2.sql` (blocage des faux déclarants et suppression automatique).
 3. Va dans **Authentication**, rubrique des fournisseurs de connexion (**Sign In / Providers**), et active **Allow anonymous sign-ins** (connexion anonyme). C'est ce qui permet d'utiliser l'appli sans créer de compte.
 4. Va dans **Project Settings**, puis **API Keys** (ou **Data API**). Note deux choses :
    - **Project URL** : ressemble à `https://abcdefgh.supabase.co`

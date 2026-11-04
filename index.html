@@ -127,6 +127,21 @@ button.btn[disabled]{opacity:.55;cursor:default}
 .tour-dots{display:flex;justify-content:center;gap:6px}
 .tour-dots i{width:7px;height:7px;border-radius:99px;background:var(--line)}
 .tour-dots i.on{background:var(--gold);width:20px}
+.modbar{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;background:#3a2a14;border:1px solid var(--warn);color:var(--warn);border-radius:14px;padding:12px 14px;font:inherit;font-weight:700;cursor:pointer;text-align:left}
+.modbar span:last-child{white-space:nowrap}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stats div{background:var(--night);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.stats b{font-family:var(--f-disp);font-weight:400;font-size:1.4rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.stats span{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.hist{display:flex;flex-direction:column;gap:6px}
+.hist div{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;padding-block:6px;border-bottom:1px solid var(--line)}
+.hist div:last-child{border-bottom:0}
+.edit{display:flex;flex-direction:column;gap:8px;background:var(--plum);border-radius:12px;padding:10px}
+.mystatus{border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);background:var(--night)}
+.mystatus.p{border-color:var(--warn)}.mystatus.ok{border-color:var(--ok)}.mystatus.bad{border-color:var(--bad)}
+.prose{font-size:.85rem;line-height:1.65;display:flex;flex-direction:column;gap:10px}
+.prose h4{margin:6px 0 0;color:var(--gold);font-family:var(--f-disp);font-weight:400;font-size:1.05rem}
+.prose p{margin:0}
 .badge{font-size:.62rem;color:var(--gold);border:1px solid currentColor;border-radius:99px;padding:1px 6px;margin-left:6px;vertical-align:middle;font-weight:600}
 .link{background:none;border:0;color:var(--lilac);font:inherit;font-size:.82rem;cursor:pointer;text-align:left;padding:0;text-decoration:underline;text-underline-offset:3px}
 .dname{font-family:var(--f-disp);font-size:1.6rem;margin:0}
@@ -255,6 +270,7 @@ nav button[aria-current="true"]{color:var(--gold)}
 
       <!-- ACCUEIL -->
       <section class="view" id="v-home">
+        <button class="modbar" type="button" id="modbar" hidden><span id="modbar-t"></span><span>Ouvrir ›</span></button>
         <button class="next" type="button" id="next-pr"><span><small>Prochaine prière · <span id="np-city"></span></small><strong id="np-name">…</strong></span><span class="cd" id="np-time"></span></button>
         <div class="hadith">
           <div class="ar">قِيرَاطَانِ مِثْلُ الْجَبَلَيْنِ الْعَظِيمَيْنِ</div>
@@ -325,9 +341,10 @@ nav button[aria-current="true"]{color:var(--gold)}
             <div><b>1</b><span>Ton annonce reste invisible tant qu'elle n'est pas vérifiée. Aucune alerte n'est envoyée avant.</span></div>
             <div><b>2</b><span>Un modérateur t'appelle, puis confirme auprès de la mosquée ou des pompes funèbres que tu indiques.</span></div>
             <div><b>3</b><span>Une fois publiée, n'importe qui peut la signaler. À 3 signalements, elle est masquée et revérifiée.</span></div>
-            <div><b>4</b><span>Une fausse déclaration bloque ton compte. L'annonce disparaît d'elle-même après l'enterrement.</span></div>
+            <div><b>4</b><span>Une fausse déclaration t'empêche de déclarer à nouveau. L'annonce est effacée 7 jours après l'enterrement, et ton numéro au plus tard 15 jours après ta déclaration.</span></div>
           </div>
         </div>
+        <div id="my-decl"></div>
         <form id="f">
           <p class="step">Le défunt</p>
           <label for="f-name">Nom ou initiales (selon le souhait de la famille)
@@ -436,7 +453,8 @@ nav button[aria-current="true"]{color:var(--gold)}
           <h4>Nos partenaires</h4>
           <div id="d-partners" class="meta">Aucun partenaire pour l'instant.</div>
           <p class="notice">Mosquée, pompes funèbres musulmanes, commerce de quartier : rejoins QIRAT en écrivant à l'adresse ci-dessous.</p>
-          <div class="copy"><code id="d-mail">partenariat@qirat.fr</code><button class="btn ghost" type="button" id="d-copy">Copier</button></div>
+          <div class="copy" id="d-contact"><code id="d-mail"></code><button class="btn ghost" type="button" id="d-copy">Copier</button></div>
+          <div class="meta" id="d-nocontact">L'adresse de contact arrive très bientôt.</div>
         </div>
       </section>
 
@@ -463,6 +481,7 @@ nav button[aria-current="true"]{color:var(--gold)}
           <div class="meta" id="myjuz">Aucun juz réservé pour l'instant.</div>
         </div>
         <button class="btn ghost" type="button" id="open-tour">Revoir la présentation</button>
+        <button class="btn ghost" type="button" data-go="privacy">Confidentialité et données</button>
         <div class="card">
           <h4>Espace modérateur</h4>
           <div class="meta" id="ml-state">Réservé à l'équipe QIRAT.</div>
@@ -472,15 +491,40 @@ nav button[aria-current="true"]{color:var(--gold)}
         <button class="btn" type="button" id="open-mod" hidden>Modération</button>
       </section>
 
+      <!-- CONFIDENTIALITE -->
+      <section class="view" id="v-privacy" hidden>
+        <button class="back" type="button" data-go="me">‹ Mon espace</button>
+        <div class="sec">Confidentialité et données</div>
+        <div class="card prose">
+          <p>QIRAT est un projet bénévole, sans publicité. Nous ne vendons et ne partageons aucune donnée.</p>
+          <h4>Sans compte</h4>
+          <p>Tu utilises QIRAT sans créer de compte. Un identifiant anonyme est créé sur ton téléphone pour retenir tes inscriptions et tes juz réservés. Ta ville, tes mosquées suivies et tes thèmes de rappels restent sur ton téléphone.</p>
+          <h4>Quand tu déclares un décès</h4>
+          <p>Nous enregistrons les informations de l'annonce, ton prénom, ton lien avec le défunt et ton téléphone. Le téléphone sert uniquement à la vérification : seuls les modérateurs le voient, il n'est jamais publié.</p>
+          <h4>Combien de temps</h4>
+          <p>Ta déclaration et ton téléphone sont effacés automatiquement au plus tard 15 jours après l'envoi. Une annonce publiée est effacée 7 jours après la date de la janaza, avec les inscriptions, la khatma et les signalements qui y sont liés.</p>
+          <h4>Tes droits</h4>
+          <p>Tu peux demander l'accès, la correction ou la suppression de tes données en écrivant à l'adresse de contact affichée dans l'onglet Don.</p>
+          <h4>Hébergement</h4>
+          <p>Les données sont hébergées par Supabase sur des serveurs situés dans l'Union européenne. L'appli est servie par GitHub Pages.</p>
+        </div>
+      </section>
+
       <!-- MODERATION -->
       <section class="view" id="v-mod" hidden>
         <button class="back" type="button" data-go="me">‹ Mon espace</button>
+        <div class="sec">Tableau de bord</div>
+        <div class="stats" id="mod-stats"></div>
         <div class="sec">Annonces à vérifier</div>
         <div id="mod-pending" class="view"></div>
         <div class="sec">Annonces publiées</div>
         <div id="mod-pub" class="view"></div>
         <div class="sec">Mosquées proposées</div>
         <div id="mod-sug" class="view"></div>
+        <div class="sec">Historique des décisions</div>
+        <div class="card"><div class="hist" id="mod-hist"></div></div>
+        <div class="sec">Déclarants bloqués</div>
+        <div id="mod-ban" class="view"></div>
         <div class="sec">Dons et partenaires</div>
         <form id="cfg" class="card">
           <label for="cfg-link">Lien de don (HelloAsso, PayPal…)
@@ -493,6 +537,8 @@ nav button[aria-current="true"]{color:var(--gold)}
           </div>
           <label for="cfg-part">Partenaires (un par ligne)
             <textarea id="cfg-part" rows="3"></textarea></label>
+          <label for="cfg-mail">E-mail de contact affiché dans l'appli
+            <input id="cfg-mail" type="email" placeholder="contact@…"></label>
           <button class="btn" type="submit">Enregistrer</button>
         </form>
       </section>
@@ -816,7 +862,8 @@ function salatAt(j){const k={Fajr:"fajr",Dhuhr:"dhuhr",Asr:"asr",Maghrib:"maghri
 
 /* ---------- Etat partagé ---------- */
 let db=null,user=null,uid=null,isMod=false;
-const S={janazas:[],going:[],khatma:[],reports:[],decl:[],decisions:[],sug:[],cfg:{}};
+const S={janazas:[],going:[],khatma:[],reports:[],decl:[],decisions:[],sug:[],banned:[],cfg:{}};
+const isBanned=()=>!!uid&&S.banned.some(b=>b.id===uid);
 let loaded=false,radius=store.get("radius",15),current=null,view="home";
 
 function visibleJanazas(){
@@ -960,7 +1007,18 @@ buildSelect();
 function presetMosque(){const h=here();const near=[...M].sort((a,b)=>hav(h,[a.lat,a.lon])-hav(h,[b.lat,b.lon]))[0];sel.value=near.i}
 $("#f-date").value=todayISO();$("#f-date").min=todayISO();
 document.querySelectorAll('input[name=vm]').forEach(r=>r.onchange=()=>{const pf=document.querySelector('input[name=vm]:checked').value==="pf";$("#pf-wrap").hidden=!pf;$("#f-pf").required=pf});
-$("#f").addEventListener("submit",async e=>{e.preventDefault();if(!needWrite())return;
+function renderDeclStatus(){
+  const W=$("#my-decl");if(!W)return;
+  if(isBanned()){W.innerHTML='<div class="mystatus bad"><strong>Tu ne peux plus déclarer de décès</strong><span class="meta">Une de tes déclarations a été jugée fausse. Si c\'est une erreur, contacte l\'équipe QIRAT (onglet Don).</span></div>';$("#f").hidden=true;return}
+  const my=S.decl.find(d=>d.id===uid&&d.uid===uid)||S.decl.find(d=>d.id===uid);
+  if(!my){W.innerHTML="";return}
+  const dec=S.decisions.find(x=>x.id===uid&&x.at===my.at);
+  const st=!dec?"p":dec.status==="published"?"ok":"bad";
+  const title=!dec?"Ta déclaration est en attente de vérification":dec.status==="published"?"Ta déclaration a été vérifiée et publiée":"Ta déclaration n'a pas été publiée";
+  const det=!dec?"Un modérateur va t'appeler au numéro indiqué.":dec.status==="published"?"Les fidèles du secteur sont prévenus. Qu'Allah lui fasse miséricorde.":(dec.reason?"Motif : "+esc(dec.reason):"Contacte l'équipe QIRAT pour en savoir plus.");
+  W.innerHTML=`<div class="mystatus ${st}"><strong>${title}</strong><span class="meta">${esc(my.name)} · ${esc(whenLabel(my.date))} · ${esc(my.mosq)}</span><span class="meta">${det}</span></div>`;
+}
+$("#f").addEventListener("submit",async e=>{e.preventDefault();if(!needWrite())return;if(isBanned())return toast("Tu ne peux plus déclarer de décès");
   const m=M[+sel.value];const vm=document.querySelector('input[name=vm]:checked').value;
   const d={name:$("#f-name").value.trim(),sex:$("#f-sex").value,age:$("#f-age").value||"",mosq:m.name,city:m.city,dep:m.dep,lat:m.lat,lon:m.lon,date:$("#f-date").value,salat:$("#f-salat").value,cim:$("#f-cim").value.trim(),
     declarant:$("#f-dn").value.trim(),rel:$("#f-rel").value,tel:$("#f-tel").value.trim(),verif:vm,pf:vm==="pf"?$("#f-pf").value.trim():"",uid,at:Date.now()};
@@ -971,8 +1029,19 @@ $("#again").onclick=()=>{$("#f").reset();$("#f-date").value=todayISO();presetMos
 /* ---------- Modération ---------- */
 const pendingDecl=()=>S.decl.filter(d=>{const x=S.decisions.find(k=>k.id===d.id);return !x||x.at!==d.at}).sort((a,b)=>a.at-b.at);
 const modChecks={};
+const REASONS=["Décès non confirmé par la mosquée ou les pompes funèbres","Déclarant injoignable","Informations incomplètes ou incorrectes","Annonce en double","Fausse déclaration"];
+function renderModbar(){const b=$("#modbar");if(!b)return;const n=isMod?pendingDecl().length:0;const r=isMod?S.janazas.filter(j=>reportCount(j.id)>0).length:0;
+  b.hidden=!(n||r);$("#modbar-t").textContent=[n?n+" annonce"+(n>1?"s":"")+" à vérifier":"",r?r+" annonce"+(r>1?"s":"")+" signalée"+(r>1?"s":""):""].filter(Boolean).join(" · ")}
+async function decide(d,status,reason,ban){
+  const rec={at:d.at,status,reason:reason||"",name:d.name,by:uid,decidedAt:Date.now()};
+  if(status==="published"){const pub={name:d.name,sex:d.sex,age:d.age,mosq:d.mosq,city:d.city,dep:d.dep,lat:d.lat,lon:d.lon,date:d.date,salat:d.salat,cim:d.cim,at:Date.now(),by:uid};await db.collection("janazas").doc(d.id+"_"+d.at).set(pub)}
+  await db.collection("decisions").doc(d.id).set(rec);
+  if(ban)await db.collection("banned").doc(d.id).set({name:d.name,declarant:d.declarant||"",reason:reason||"Fausse déclaration",at:Date.now(),by:uid});
+}
 function renderMod(){
-  const P=$("#mod-pending");const pend=pendingDecl();
+  const pend=pendingDecl();
+  $("#mod-stats").innerHTML=[[pend.length,"À vérifier"],[S.janazas.length,"En ligne"],[S.janazas.filter(j=>reportCount(j.id)>0).length,"Signalées"],[S.banned.length,"Bloqués"]].map(([n,l])=>`<div><b>${n}</b><span>${l}</span></div>`).join("");
+  const P=$("#mod-pending");
   P.innerHTML=pend.length?"":'<div class="empty">Aucune annonce en attente.</div>';
   pend.forEach(d=>{const c=document.createElement("div");c.className="card";
     c.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h4>${esc(d.name)}</h4><span class="pill p">À vérifier</span></div>
@@ -980,12 +1049,15 @@ function renderMod(){
       <dt>Déclarant</dt><dd>${esc(d.declarant)} (${esc(d.rel)})</dd><dt>Téléphone</dt><dd>${esc(d.tel)}</dd><dt>Confirmer via</dt><dd>${d.verif==="pf"?"Pompes funèbres : "+esc(d.pf):"La mosquée"}</dd></dl>
       <label class="check"><input type="checkbox" class="c1"${(modChecks[d.id]||{}).c1?" checked":""}> J'ai appelé le déclarant</label>
       <label class="check"><input type="checkbox" class="c2"${(modChecks[d.id]||{}).c2?" checked":""}> ${d.verif==="pf"?"Les pompes funèbres":"La mosquée"} confirme le décès</label>
-      <div class="btns"><button class="btn" type="button" data-a="ok" disabled>Publier et alerter</button><button class="btn danger" type="button" data-a="no">Refuser</button></div>`;
+      <div class="meta">Reçue ${new Date(d.at).toLocaleString("fr-FR",{weekday:"short",hour:"2-digit",minute:"2-digit"})}</div>
+      <button class="btn" type="button" data-a="ok" disabled>Publier et alerter</button>
+      <label class="field">Motif en cas de refus<select class="why">${REASONS.map(r=>`<option>${r}</option>`).join("")}</select></label>
+      <div class="btns"><button class="btn ghost" type="button" data-a="no">Refuser</button><button class="btn danger" type="button" data-a="ban">Fausse annonce : refuser et bloquer</button></div>`;
     const ok=c.querySelector('[data-a=ok]');const upd=()=>{const a=c.querySelector(".c1").checked,b=c.querySelector(".c2").checked;modChecks[d.id]={c1:a,c2:b};ok.disabled=!(a&&b)};upd();
     c.querySelectorAll("input").forEach(i=>i.onchange=upd);
-    ok.onclick=async()=>{ok.disabled=true;try{const pub={name:d.name,sex:d.sex,age:d.age,mosq:d.mosq,city:d.city,dep:d.dep,lat:d.lat,lon:d.lon,date:d.date,salat:d.salat,cim:d.cim,at:Date.now(),by:uid};
-      await db.collection("janazas").doc(d.id+"_"+d.at).set(pub);await db.collection("decisions").doc(d.id).set({at:d.at,status:"published"});toast("Publiée. Les fidèles du secteur sont prévenus")}catch(e){writeErr(e);upd()}};
-    c.querySelector('[data-a=no]').onclick=async()=>{try{await db.collection("decisions").doc(d.id).set({at:d.at,status:"refused"});toast("Annonce refusée")}catch(e){writeErr(e)}};
+    ok.onclick=async()=>{ok.disabled=true;try{await decide(d,"published");toast("Publiée. Les fidèles du secteur sont prévenus")}catch(e){writeErr(e);upd()}};
+    c.querySelector('[data-a=no]').onclick=async()=>{try{await decide(d,"refused",c.querySelector(".why").value);toast("Annonce refusée, le déclarant voit le motif")}catch(e){writeErr(e)}};
+    c.querySelector('[data-a=ban]').onclick=async e=>{if(e.target.dataset.sure!=="1"){e.target.dataset.sure="1";e.target.textContent="Confirmer : refuser et bloquer";return}try{await decide(d,"refused","Fausse déclaration",true);toast("Refusée, déclarant bloqué")}catch(err){writeErr(err)}};
     P.appendChild(c)});
   const G=$("#mod-sug");G.innerHTML=S.sug.length?"":'<div class="empty">Aucune proposition.</div>';
   S.sug.forEach(x=>{const c=document.createElement("div");c.className="card";
@@ -999,18 +1071,34 @@ function renderMod(){
   pubs.forEach(j=>{const n=reportCount(j.id);const c=document.createElement("div");c.className="card";
     c.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h4>${esc(j.name)} · ${esc(j.city)}</h4><span class="pill ${n>=3?"bad":n?"p":"ok"}">${n?n+" signalement(s)":"En ligne"}</span></div>
       <div class="meta">${esc(whenLabel(j.date))} · ${goingCount(j.id)} inscrits · ${S.khatma.filter(k=>k.jid===j.id).length}/30 juz</div>
-      <div class="btns">${n?'<button class="btn ghost" type="button" data-a="clear">Annonce confirmée, effacer les signalements</button>':""}<button class="btn danger" type="button" data-a="del">Retirer l'annonce</button></div>`;
+      <div class="btns"><button class="btn ghost" type="button" data-a="edit">Modifier</button>${n?'<button class="btn ghost" type="button" data-a="clear">Confirmée : effacer les signalements</button>':""}<button class="btn danger" type="button" data-a="del">Retirer</button></div>
+      <form class="edit" hidden>
+        <label class="field">Nom ou initiales<input name="name" required maxlength="60" value="${esc(j.name)}"></label>
+        <div class="two"><label class="field">Date<input name="date" type="date" required value="${esc(j.date)}"></label>
+        <label class="field">Après<select name="salat">${["Fajr","Dhuhr","Asr","Maghrib","Isha","Jumu'a"].map(x=>`<option${x===j.salat?" selected":""}>${x}</option>`).join("")}</select></label></div>
+        <label class="field">Âge<input name="age" type="number" min="0" max="120" value="${esc(j.age||"")}"></label>
+        <label class="field">Inhumation<input name="cim" maxlength="120" value="${esc(j.cim||"")}"></label>
+        <button class="btn" type="submit">Enregistrer les corrections</button>
+      </form>`;
+    const ef=c.querySelector("form.edit");c.querySelector('[data-a=edit]').onclick=()=>{ef.hidden=!ef.hidden};
+    ef.onsubmit=async ev=>{ev.preventDefault();const f=new FormData(ef);try{await db.collection("janazas").doc(j.id).update({name:String(f.get("name")).trim(),date:f.get("date"),salat:f.get("salat"),age:String(f.get("age")||""),cim:String(f.get("cim")).trim(),editedAt:Date.now()});toast("Annonce corrigée")}catch(err){writeErr(err)}};
     const cl=c.querySelector('[data-a=clear]');if(cl)cl.onclick=async()=>{try{for(const r of S.reports.filter(r=>r.jid===j.id))await db.collection("reports").doc(r.id).delete();toast("Signalements effacés")}catch(e){writeErr(e)}};
     c.querySelector('[data-a=del]').onclick=async e=>{if(e.target.dataset.sure!=="1"){e.target.dataset.sure="1";e.target.textContent="Confirmer le retrait";return}try{await db.collection("janazas").doc(j.id).delete();toast("Annonce retirée")}catch(err){writeErr(err)}};
     U.appendChild(c)});
+  const H=$("#mod-hist");const hist=[...S.decisions].filter(x=>x.decidedAt).sort((a,b)=>b.decidedAt-a.decidedAt).slice(0,15);
+  H.innerHTML=hist.length?hist.map(x=>`<div><span>${esc(x.name||"Annonce")}${x.reason?` <span class="meta">· ${esc(x.reason)}</span>`:""}</span><span class="pill ${x.status==="published"?"ok":"bad"}">${x.status==="published"?"Publiée":"Refusée"}</span></div>`).join(""):'<div class="meta">Aucune décision pour l\'instant.</div>';
+  const B=$("#mod-ban");B.innerHTML=S.banned.length?"":'<div class="empty">Personne n\'est bloqué.</div>';
+  S.banned.forEach(x=>{const c=document.createElement("div");c.className="card";
+    c.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span><b>${esc(x.declarant||"Déclarant")}</b> <span class="meta">· annonce « ${esc(x.name||"")} »</span></span><button class="btn ghost" type="button">Débloquer</button></div>`;
+    c.querySelector("button").onclick=async()=>{try{await db.collection("banned").doc(x.id).delete();toast("Débloqué")}catch(e){writeErr(e)}};B.appendChild(c)});
 }
-function fillCfg(){const c=S.cfg;$("#cfg-link").value=c.link||"";$("#cfg-col").value=c.collected??0;$("#cfg-goal").value=c.goal||600;$("#cfg-part").value=(c.partners||[]).join("\n")}
+function fillCfg(){const c=S.cfg;$("#cfg-mail").value=c.contact||"";$("#cfg-link").value=c.link||"";$("#cfg-col").value=c.collected??0;$("#cfg-goal").value=c.goal||600;$("#cfg-part").value=(c.partners||[]).join("\n")}
 $("#cfg").addEventListener("submit",async e=>{e.preventDefault();if(!needWrite())return;
-  const data={link:$("#cfg-link").value.trim(),collected:Math.max(0,+$("#cfg-col").value||0),goal:Math.max(1,+$("#cfg-goal").value||600),partners:$("#cfg-part").value.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,30)};
+  const data={link:$("#cfg-link").value.trim(),collected:Math.max(0,+$("#cfg-col").value||0),goal:Math.max(1,+$("#cfg-goal").value||600),partners:$("#cfg-part").value.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,30),contact:$("#cfg-mail").value.trim()};
   try{await db.doc("config/dons").set(data);toast("Enregistré")}catch(err){writeErr(err)}});
 
 /* ---------- Dons ---------- */
-function renderDon(){const c=S.cfg;const col=c.collected||0,goal=c.goal||600;
+function renderDon(){const c=S.cfg;const mail=(c.contact||"").trim();$("#d-contact").hidden=!mail;$("#d-nocontact").hidden=!!mail;$("#d-mail").textContent=mail;const col=c.collected||0,goal=c.goal||600;
   $("#d-col").textContent=col.toLocaleString("fr-FR")+" €";$("#d-goal").textContent="sur "+goal.toLocaleString("fr-FR")+" €";$("#d-bar").style.width=Math.min(100,col/goal*100)+"%";
   const p=c.partners||[];$("#d-partners").textContent=p.length?p.join(" · "):"Aucun partenaire pour l'instant.";
   const g=$("#d-give");const valid=/^https:\/\//.test(c.link||"");
@@ -1030,6 +1118,7 @@ function renderMe(){
   if(isMod){const n=pendingDecl().length+S.sug.length;$("#open-mod").textContent="Modération"+(n?" · "+n+" à traiter":"")}
 }
 $("#me-fol-add").onclick=()=>{mqDep="fol";document.querySelectorAll("#mq-chips button").forEach(x=>x.setAttribute("aria-pressed",x.textContent==="★ Suivies"));if(!follows.length){mqDep="all";document.querySelectorAll("#mq-chips button").forEach((x,i)=>x.setAttribute("aria-pressed",i===0))}show("mosq")};
+$("#modbar").onclick=()=>{fillCfg();show("mod")};
 $("#open-mod").onclick=()=>{fillCfg();show("mod")};
 
 /* ---------- Mosquées vue ---------- */
@@ -1182,11 +1271,11 @@ if(!store.get("tourDone",false))setTimeout(()=>showTour(0),400);
 /* ---------- Navigation ---------- */
 function show(v){view=v;
   document.querySelectorAll("main > .view").forEach(s=>s.hidden=s.id!=="v-"+v);
-  const tab={detail:"home",mosq:"home",prieres:"home",mod:"me"}[v]||v;
+  const tab={detail:"home",mosq:"home",prieres:"home",mod:"me",privacy:"me"}[v]||v;
   document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===tab));
   render();$("#main").scrollTop=0}
 function render(){
-  tickNext();
+  tickNext();renderModbar();if(view==="declare")renderDeclStatus();
   if(view==="home")renderList();else if(view==="prieres")renderPrieres();else if(view==="detail")renderDetail();else if(view==="mosq")renderMq();
   else if(view==="rappels")renderRappels();else if(view==="don")renderDon();else if(view==="me")renderMe();else if(view==="mod")renderMod();
 }
@@ -1240,7 +1329,7 @@ function makeDb(sb){
   db.collection("mosques").onSnapshot(s=>{EXTRA=s.docs.map(d=>({id:d.id,...d.data()}));buildM();buildSelect();render()},()=>{});
   sub("suggestions","sug");sub("going","going");sub("khatma","khatma");sub("reports","reports");
   db.doc("config/dons").onSnapshot(s=>{S.cfg=s.exists?s.data():{};render()},()=>{});
-  if(isMod){sub("declarations","decl");sub("decisions","decisions")}
+  sub("declarations","decl");sub("decisions","decisions");sub("banned","banned");
   renderLogin();render();
 })();
 
